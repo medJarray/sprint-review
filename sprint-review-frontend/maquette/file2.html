@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Objectifs du Sprint</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .bg-atlassian-blue { background-color: #0052CC; }
+        .text-atlassian-blue { color: #0052CC; }
+        .bg-atlassian-dark { background-color: #172B4D; }
+        .text-atlassian-dark { color: #172B4D; }
+        .bg-atlassian-light { background-color: #F4F5F7; }
+        .bg-atlassian-lighter { background-color: #EBECF0; }
+        .border-atlassian-blue { border-color: #0052CC; }
+        .card-shadow { box-shadow: 0 1px 2px rgba(9, 30, 66, 0.25), 0 0 1px 0 rgba(9, 30, 66, 0.31); }
+        .tag { @apply px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wide; }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen m-0">
+<div class="w-[1280px] h-[720px] bg-white flex flex-col overflow-hidden relative shadow-2xl">
+<!-- Header Section -->
+<div class="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-12 z-20 shrink-0">
+<div class="flex items-center space-x-4">
+<div class="w-10 h-10 bg-atlassian-blue rounded flex items-center justify-center text-white shadow-sm">
+<i class="fab fa-jira text-2xl"></i>
+</div>
+<div>
+<h1 class="text-2xl font-bold text-atlassian-dark">Objectifs du Sprint</h1>
+<p class="text-xs text-gray-500 font-medium uppercase tracking-wider flex items-center">
+<span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                        Sprint #24 : Refonte UX Mobile
+                    </p>
+</div>
+</div>
+<div class="flex items-center space-x-6">
+<div class="text-right">
+<p class="text-xs text-gray-400 font-bold uppercase">Vélocité Cible</p>
+<p class="text-lg font-bold text-atlassian-dark">42 pts</p>
+</div>
+<div class="h-8 w-px bg-gray-200"></div>
+<div class="text-right">
+<p class="text-xs text-gray-400 font-bold uppercase">Jours Ouvrés</p>
+<p class="text-lg font-bold text-atlassian-dark">10 j</p>
+</div>
+</div>
+</div>
+<!-- Main Content Area -->
+<div class="flex-1 flex bg-atlassian-light p-10 space-x-8 overflow-hidden">
+<!-- Left Column: SMART Objectives (65%) -->
+<div class="w-2/3 flex flex-col h-full">
+<!-- Section Header -->
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center space-x-2 text-atlassian-dark">
+<i class="fas fa-bullseye text-atlassian-blue text-lg"></i>
+<h2 class="text-lg font-bold uppercase tracking-wide">Objectifs SMART</h2>
+</div>
+<span class="text-xs font-medium text-gray-500 bg-white px-3 py-1 rounded-full border border-gray-200">3 Objectifs Principaux</span>
+</div>
+<!-- Scrollable Objectives Container -->
+<div class="flex-1 space-y-5 overflow-y-auto pr-2 pb-2">
+<!-- Objective 1 -->
+<div class="bg-white p-6 rounded-lg card-shadow border-l-4 border-blue-600 group hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-3">
+<h3 class="text-xl font-bold text-gray-800 group-hover:text-blue-700 transition-colors">Finaliser l'Épique "Paiement One-Click"</h3>
+<span class="tag bg-blue-100 text-blue-800">Priorité Haute</span>
+</div>
+<p class="text-gray-600 mb-4 leading-relaxed">Implémenter le flux complet de paiement simplifié pour les utilisateurs connectés afin d'augmenter le taux de conversion mobile de 15%.</p>
+<div class="flex items-center space-x-4 text-sm border-t border-gray-100 pt-3 mt-2">
+<div class="flex items-center text-gray-500 font-medium bg-gray-50 px-2 py-1 rounded">
+<i class="fas fa-layer-group mr-2 text-blue-400"></i>
+                                Portée : Checkout &amp; Paiement
+                            </div>
+<div class="flex items-center text-gray-500 font-medium">
+<i class="fas fa-link mr-2 text-gray-400"></i>
+                                Épique: EPIC-42
+                            </div>
+</div>
+</div>
+<!-- Objective 2 -->
+<div class="bg-white p-6 rounded-lg card-shadow border-l-4 border-indigo-500 group hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-3">
+<h3 class="text-xl font-bold text-gray-800 group-hover:text-indigo-700 transition-colors">Optimisation des Performances</h3>
+<span class="tag bg-indigo-100 text-indigo-800">Priorité Moyenne</span>
+</div>
+<p class="text-gray-600 mb-4 leading-relaxed">Réduire le temps de chargement de la page d'accueil mobile de 20% (cible &lt; 1.5s) via la compression des assets et le lazy-loading.</p>
+<div class="flex items-center space-x-4 text-sm border-t border-gray-100 pt-3 mt-2">
+<div class="flex items-center text-gray-500 font-medium bg-gray-50 px-2 py-1 rounded">
+<i class="fas fa-layer-group mr-2 text-indigo-400"></i>
+                                Portée : Core Performance
+                            </div>
+</div>
+</div>
+<!-- Objective 3 -->
+<div class="bg-white p-6 rounded-lg card-shadow border-l-4 border-teal-500 group hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-3">
+<h3 class="text-xl font-bold text-gray-800 group-hover:text-teal-700 transition-colors">Analytics V2 &amp; Tracking</h3>
+<span class="tag bg-teal-100 text-teal-800">Tech Enabler</span>
+</div>
+<p class="text-gray-600 mb-4 leading-relaxed">Mettre à jour le plan de marquage pour capturer les abandons de panier avec la nouvelle granularité requise par la BI.</p>
+<div class="flex items-center space-x-4 text-sm border-t border-gray-100 pt-3 mt-2">
+<div class="flex items-center text-gray-500 font-medium bg-gray-50 px-2 py-1 rounded">
+<i class="fas fa-layer-group mr-2 text-teal-400"></i>
+                                Portée : Data Analytics
+                            </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Context & DoD (35%) -->
+<div class="w-1/3 flex flex-col space-y-6">
+<!-- Success Criteria Block -->
+<div class="bg-white rounded-lg card-shadow p-6 flex-1 flex flex-col">
+<div class="flex items-center space-x-2 text-green-700 mb-4 border-b border-gray-100 pb-3">
+<i class="fas fa-flag-checkered text-lg"></i>
+<h2 class="text-sm font-bold uppercase tracking-wider">Critères de Succès (KPI)</h2>
+</div>
+<ul class="space-y-4 flex-1">
+<li class="flex items-start">
+<span class="bg-green-100 text-green-600 rounded-full w-6 h-6 flex items-center justify-center text-xs mr-3 mt-0.5 flex-shrink-0"><i class="fas fa-check"></i></span>
+<p class="text-sm text-gray-700 font-medium">Taux de conversion &gt; 2.5% sur mobile</p>
+</li>
+<li class="flex items-start">
+<span class="bg-green-100 text-green-600 rounded-full w-6 h-6 flex items-center justify-center text-xs mr-3 mt-0.5 flex-shrink-0"><i class="fas fa-check"></i></span>
+<p class="text-sm text-gray-700 font-medium">Zéro régression critique (P0) sur le checkout</p>
+</li>
+<li class="flex items-start">
+<span class="bg-green-100 text-green-600 rounded-full w-6 h-6 flex items-center justify-center text-xs mr-3 mt-0.5 flex-shrink-0"><i class="fas fa-check"></i></span>
+<p class="text-sm text-gray-700 font-medium">Score Lighthouse Performance &gt; 90</p>
+</li>
+</ul>
+</div>
+<!-- Constraints Block -->
+<div class="bg-white rounded-lg card-shadow p-6">
+<div class="flex items-center space-x-2 text-orange-600 mb-4 border-b border-gray-100 pb-3">
+<i class="fas fa-exclamation-triangle text-lg"></i>
+<h2 class="text-sm font-bold uppercase tracking-wider">Hypothèses &amp; Contraintes</h2>
+</div>
+<ul class="space-y-3">
+<li class="flex items-start bg-orange-50 p-2 rounded border border-orange-100">
+<i class="fas fa-network-wired text-orange-400 mt-1 mr-2 text-xs"></i>
+<p class="text-xs text-orange-900 font-medium">Dépendance API Paiement (livraison J+2)</p>
+</li>
+<li class="flex items-start bg-orange-50 p-2 rounded border border-orange-100">
+<i class="fas fa-database text-orange-400 mt-1 mr-2 text-xs"></i>
+<p class="text-xs text-orange-900 font-medium">Code Freeze DB : Pas de migration schéma</p>
+</li>
+</ul>
+</div>
+<!-- DoD Reminder -->
+<div class="bg-atlassian-dark rounded-lg card-shadow p-6 text-white mt-auto relative overflow-hidden">
+<div class="absolute top-0 right-0 w-20 h-20 bg-blue-600 rounded-full blur-2xl opacity-20 -mr-10 -mt-10"></div>
+<div class="flex items-center justify-between space-x-2 text-blue-300 mb-4 relative z-10">
+<div class="flex items-center space-x-2">
+<i class="fas fa-clipboard-check"></i>
+<h2 class="text-sm font-bold uppercase tracking-wider">Definition of Done</h2>
+</div>
+<i class="fas fa-info-circle opacity-50 text-xs"></i>
+</div>
+<div class="grid grid-cols-2 gap-y-3 gap-x-2 text-xs relative z-10">
+<div class="flex items-center"><i class="far fa-check-square mr-2 text-green-400"></i> Code Review</div>
+<div class="flex items-center"><i class="far fa-check-square mr-2 text-green-400"></i> Unit Tests &gt; 80%</div>
+<div class="flex items-center"><i class="far fa-check-square mr-2 text-green-400"></i> Doc Technique</div>
+<div class="flex items-center"><i class="far fa-check-square mr-2 text-green-400"></i> Déployé en Staging</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
