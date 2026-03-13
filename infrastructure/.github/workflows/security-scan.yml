@@ -1,0 +1,40 @@
+# .github/workflows/security-scan.yml
+name: Drift Detection & Security Scan
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'    # Chaque lundi à 6h
+  workflow_dispatch:         # Déclenchement manuel
+
+jobs:
+  drift-detection:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Plan (drift detection)
+        working-directory: terraform/environments/prod
+        run: |
+          terraform init
+          terraform plan -var-file=terraform.tfvars -detailed-exitcode
+        continue-on-error: true
+
+      - name: Alert on drift
+        if: steps.plan.outcome == 'failure'
+        run: echo "⚠️ Infrastructure drift detected!"
+
+  security-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-action@v1.0.0
+
+      - name: Run kube-bench (CIS Benchmark)
+        run: |
+          # kube-bench vérifie la conformité CIS de ton cluster K3s
+          ssh deploy@${{ secrets.PROD_IP }} \
+            "kubectl apply -f https://raw.githubusercontent.com/aquasecurity/kube-bench/main/job.yaml && \
+             kubectl logs job/kube-bench"
