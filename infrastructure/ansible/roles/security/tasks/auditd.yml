@@ -30,7 +30,7 @@
       -w /etc/rancher/k3s/k3s.yaml -p r -k kubeconfig
     owner: root
     mode: '0640'
-  notify: restart auditd
+  notify: Restart auditd
 
 - name: Enable auditd
   ansible.builtin.systemd:

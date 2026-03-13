@@ -5,13 +5,13 @@
     name: "{{ deploy_user }}"
     shell: /bin/bash
     groups: sudo
-    append: yes
-    create_home: yes
+    append: true
+    create_home: true
 
 - name: Allow deploy user passwordless sudo
   ansible.builtin.lineinfile:
     path: /etc/sudoers.d/{{ deploy_user }}
     line: "{{ deploy_user }} ALL=(ALL) NOPASSWD:ALL"
-    create: yes
+    create: true
     mode: "0440"
     validate: "visudo -cf %s"

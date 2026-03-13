@@ -10,7 +10,7 @@
     --namespace {{ envoy_gateway_namespace }} \
     --create-namespace \
     {{ envoy_gateway_version_flag }}
-  environment: 
+  environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
   register: envoy_gateway_install
   changed_when: "'Release \"envoy-gateway\" has been upgraded' in envoy_gateway_install.stdout or 'Release \"envoy-gateway\" has been installed' in envoy_gateway_install.stdout"

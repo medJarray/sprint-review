@@ -10,7 +10,7 @@
     --namespace {{ sealed_secrets_namespace }} \
     {{ sealed_secrets_version_flag }} \
     --create-namespace
-  environment: 
+  environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
   register: sealed_secrets_install
   changed_when: "'Release \"sealed-secrets\" has been upgraded' in sealed_secrets_install.stdout or 'Release \"sealed-secrets\" has been installed' in sealed_secrets_install.stdout"

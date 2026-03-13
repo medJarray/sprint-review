@@ -8,7 +8,7 @@
 - name: Apply cert-manager Issuer configuration
   ansible.builtin.shell: |
     kubectl apply -f /tmp/cluster-issuer.yaml
-  environment: 
+  environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
   register: apply_issuer
   failed_when: apply_issuer.rc != 0

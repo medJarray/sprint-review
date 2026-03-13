@@ -1,0 +1,29 @@
+---
+# .ansible-lint configuration
+profile: basic
+
+# Skip rules that are impractical to fix without breaking playbooks
+skip_list:
+  # Variables already named without role prefix throughout all playbooks/inventories
+  - var-naming[no-role-prefix]
+  # Shell pipes with kubectl/helm are necessary for K8s operations
+  - risky-shell-pipe
+  # curl install scripts are standard for K3s/Helm
+  - command-instead-of-module
+  # Shell is needed when using pipes, env vars, or redirections
+  - command-instead-of-shell
+  # Many tasks are one-shot installs where changed_when is not relevant
+  - no-changed-when
+
+# Warn instead of fail on these
+warn_list:
+  - name[casing]
+  - risky-file-permissions
+  - yaml[truthy]
+
+# YAML formatting rules
+yaml:
+  max-line-length: 200
+  truthy:
+    check-keys: false
+    allowed-values: ["true", "false", "yes", "no"]
