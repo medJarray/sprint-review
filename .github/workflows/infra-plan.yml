@@ -4,8 +4,8 @@ name: Terraform Plan
 on:
   pull_request:
     paths:
-      - 'terraform/**'
-      - 'ansible/**'
+      - 'infrastructure/terraform/**'
+      - 'infrastructure/ansible/**'
 
 env:
   TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
@@ -52,11 +52,11 @@ jobs:
           terraform_version: "1.7.0"
 
       - name: Terraform Init
-        working-directory: terraform/environments/${{ matrix.environment }}
+        working-directory: infrastructure/terraform/environments/${{ matrix.environment }}
         run: terraform init
 
       - name: Terraform Plan
-        working-directory: terraform/environments/${{ matrix.environment }}
+        working-directory: infrastructure/terraform/environments/${{ matrix.environment }}
         run: terraform plan -var-file=terraform.tfvars -no-color -out=tfplan
 
       - name: Post plan to PR
@@ -85,4 +85,4 @@ jobs:
       - name: Run ansible-lint
         uses: ansible/ansible-lint@v24
         with:
-          working_directory: ansible/
+          working_directory: infrastructure/ansible/
