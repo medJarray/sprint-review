@@ -4,8 +4,8 @@ name: Terraform Plan
 on:
   pull_request:
     paths:
-      - 'terraform/**'
-      - 'ansible/**'
+      - 'infrastructure/terraform/**'
+      - 'infrastructure/ansible/**'
 
 env:
   TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
@@ -22,12 +22,12 @@ jobs:
       - name: Run tfsec
         uses: aquasecurity/tfsec-action@v1.0.0
         with:
-          working_directory: terraform/
+          working_directory: infrastructure/terraform/
 
       - name: Run checkov
         uses: bridgecrewio/checkov-action@v12
         with:
-          directory: terraform/
+          directory: infrastructure/terraform/
           framework: terraform
 
       - name: Gitleaks scan
@@ -52,11 +52,11 @@ jobs:
           terraform_version: "1.7.0"
 
       - name: Terraform Init
-        working-directory: terraform/environments/${{ matrix.environment }}
+        working-directory: infrastructure/terraform/environments/${{ matrix.environment }}
         run: terraform init
 
       - name: Terraform Plan
-        working-directory: terraform/environments/${{ matrix.environment }}
+        working-directory: infrastructure/terraform/environments/${{ matrix.environment }}
         run: terraform plan -var-file=terraform.tfvars -no-color -out=tfplan
 
       - name: Post plan to PR
@@ -82,7 +82,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run ansible-lint
-        uses: ansible/ansible-lint@v24
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          working_directory: ansible/
+          python-version: '3.12'
+
+      - name: Install ansible-lint with compatible deps
+        run: pip install "ansible-core>=2.17,<2.18" "ansible-lint>=24.0,<25.0"
+
+      - name: Run ansible-lint
+        working-directory: infrastructure/ansible/
+        run: ansible-lint
