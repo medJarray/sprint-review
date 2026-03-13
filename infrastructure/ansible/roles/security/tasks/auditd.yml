@@ -1,0 +1,39 @@
+# ansible/roles/security/tasks/auditd.yml
+---
+- name: Install auditd
+  ansible.builtin.apt:
+    name:
+      - auditd
+      - audispd-plugins
+    state: present
+
+- name: Configure audit rules
+  ansible.builtin.copy:
+    dest: /etc/audit/rules.d/k3s-security.rules
+    content: |
+      # Monitor sudo usage
+      -w /etc/sudoers -p wa -k sudoers
+      -w /etc/sudoers.d/ -p wa -k sudoers
+
+      # Monitor SSH config
+      -w /etc/ssh/sshd_config -p wa -k sshd_config
+      -w /etc/ssh/sshd_config.d/ -p wa -k sshd_config
+
+      # Monitor user/group changes
+      -w /etc/passwd -p wa -k identity
+      -w /etc/group -p wa -k identity
+
+      # Monitor K3s binary
+      -w /usr/local/bin/k3s -p x -k k3s
+
+      # Monitor kubeconfig
+      -w /etc/rancher/k3s/k3s.yaml -p r -k kubeconfig
+    owner: root
+    mode: '0640'
+  notify: restart auditd
+
+- name: Enable auditd
+  ansible.builtin.systemd:
+    name: auditd
+    enabled: true
+    state: started

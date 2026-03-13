@@ -1,0 +1,16 @@
+# ansible/roles/envoy_gateway/tasks/install.yml
+---
+- name: Set Helm chart version for Envoy Gateway
+  ansible.builtin.set_fact:
+    envoy_gateway_version_flag: "{{ '--version ' + envoy_gateway_version if envoy_gateway_version != '' else '' }}"
+
+- name: Install Envoy Gateway
+  ansible.builtin.shell: |
+    helm upgrade --install envoy-gateway oci://docker.io/envoyproxy/gateway-helm \
+    --namespace {{ envoy_gateway_namespace }} \
+    --create-namespace \
+    {{ envoy_gateway_version_flag }}
+  environment: 
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: envoy_gateway_install
+  changed_when: "'Release \"envoy-gateway\" has been upgraded' in envoy_gateway_install.stdout or 'Release \"envoy-gateway\" has been installed' in envoy_gateway_install.stdout"

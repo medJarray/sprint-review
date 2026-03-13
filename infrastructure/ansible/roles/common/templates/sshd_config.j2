@@ -1,0 +1,11 @@
+# ansible/roles/common/templates/sshd_config.j2
+# Managed by Ansible — DO NOT EDIT MANUALLY
+PermitRootLogin no
+PasswordAuthentication no
+PubkeyAuthentication yes
+MaxAuthTries 3
+ClientAliveInterval 300
+ClientAliveCountMax 2
+X11Forwarding no
+AllowTcpForwarding no
+MaxSessions 3

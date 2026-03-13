@@ -1,0 +1,17 @@
+# ansible/roles/argocd/tasks/main.yml
+---
+- name: Add Helm repo for Argo CD
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/helm_repo.yml"
+  tags: [argocd, helm_repo]
+
+- name: Deploy Argo CD
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+  tags: [argocd, install]
+
+- name: Verify Argo CD deployment
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/verify.yml"
+  tags: [argocd, verify]
+
+- name: Configure Argo CD ingress
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/configure_ingress.yml"
+  tags: [argocd, ingress]

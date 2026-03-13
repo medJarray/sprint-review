@@ -1,0 +1,26 @@
+# ansible/roles/k3s_server/tasks/configure.yml
+---
+- name: Ensure K3s service is enabled and running
+  ansible.builtin.systemd:
+    name: k3s
+    enabled: true
+    state: started
+
+- name: Wait for node to be Ready
+  ansible.builtin.command: >
+    kubectl get node {{ inventory_hostname }}
+    -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}'
+  register: node_ready
+  retries: 30
+  delay: 10
+  until: node_ready.stdout == "True"
+  changed_when: false
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+- name: Wait for CoreDNS to be available
+  ansible.builtin.command: >
+    kubectl -n kube-system rollout status deployment/coredns --timeout=120s
+  changed_when: false
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml

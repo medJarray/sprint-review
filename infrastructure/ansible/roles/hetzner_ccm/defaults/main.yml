@@ -1,0 +1,10 @@
+# ansible/roles/hetzner_ccm/defaults/main.yml
+---
+# Version du CCM (vide = dernière stable via le manifest main)
+hetzner_ccm_version: ""
+
+# Réseau privé Hetzner (vide = pas de réseau privé)
+hetzner_ccm_network: ""
+
+# Timeout pour attendre les pods CCM
+hetzner_ccm_wait_timeout: 120

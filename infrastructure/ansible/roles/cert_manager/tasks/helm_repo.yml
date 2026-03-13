@@ -1,0 +1,11 @@
+# ansible/roles/cert_manager/tasks/helm_repo.yml
+---
+- name: Add helm repo for cert-manager
+  ansible.builtin.shell: |
+    helm repo add jetstack https://charts.jetstack.io
+  register: cert_manager_helm_repo
+  changed_when: "'already exists' not in cert_manager_helm_repo.stderr"
+
+- name: Update helm repositories
+  ansible.builtin.shell: helm repo update
+  changed_when: false

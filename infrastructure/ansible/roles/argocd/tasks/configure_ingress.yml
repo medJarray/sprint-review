@@ -1,0 +1,116 @@
+# ansible/roles/argocd/tasks/configure_ingress.yml
+---
+- name: Configure ArgoCD to run in insecure mode (TLS terminated by Envoy Gateway)
+  ansible.builtin.shell: |
+    helm upgrade argocd argo/argo-cd \
+    --namespace {{ argocd_namespace }} \
+    --reuse-values \
+    --set 'configs.params.server\.insecure=true'
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: argocd_insecure
+  changed_when: "'Release \"argocd\" has been upgraded' in argocd_insecure.stdout"
+
+- name: Create ReferenceGrant to allow Gateway to use ArgoCD TLS secret
+  ansible.builtin.shell: |
+    cat <<EOF | kubectl apply -f -
+    apiVersion: gateway.networking.k8s.io/v1beta1
+    kind: ReferenceGrant
+    metadata:
+      name: argocd-tls-grant
+      namespace: {{ argocd_namespace }}
+    spec:
+      from:
+        - group: gateway.networking.k8s.io
+          kind: Gateway
+          namespace: {{ envoy_gateway_namespace }}
+      to:
+        - group: ""
+          kind: Secret
+          name: argocd-tls
+    EOF
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: argocd_ref_grant
+  changed_when: "'created' in argocd_ref_grant.stdout or 'configured' in argocd_ref_grant.stdout"
+
+- name: Create Certificate for ArgoCD TLS (Let's Encrypt)
+  ansible.builtin.shell: |
+    cat <<EOF | kubectl apply -f -
+    apiVersion: cert-manager.io/v1
+    kind: Certificate
+    metadata:
+      name: argocd-tls
+      namespace: {{ argocd_namespace }}
+    spec:
+      secretName: argocd-tls
+      issuerRef:
+        name: letsencrypt-prod
+        kind: ClusterIssuer
+      dnsNames:
+        - {{ argocd_hostname }}
+    EOF
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: argocd_cert
+  changed_when: "'created' in argocd_cert.stdout or 'configured' in argocd_cert.stdout"
+
+- name: Wait for ArgoCD TLS certificate to be Ready
+  ansible.builtin.shell: |
+    kubectl wait certificate argocd-tls -n {{ argocd_namespace }} \
+      --for=condition=Ready \
+      --timeout=300s
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  changed_when: false
+
+- name: Write ArgoCD HTTPS listener patch to temp file
+  ansible.builtin.copy:
+    dest: /tmp/argocd-listener-patch.json
+    content: |
+      [{"op": "add", "path": "/spec/listeners/-", "value": {"name": "https-argocd", "protocol": "HTTPS", "port": 443, "hostname": "{{ argocd_hostname }}", "allowedRoutes": {"namespaces": {"from": "All"}}, "tls": {"mode": "Terminate", "certificateRefs": [{"name": "argocd-tls", "namespace": "{{ argocd_namespace }}"}]}}}]
+    mode: "0644"
+
+- name: Add ArgoCD HTTPS listener to Envoy Gateway
+  ansible.builtin.shell: |
+    IDX=0
+    for NAME in $(kubectl get gateway {{ envoy_gateway_name }} -n {{ envoy_gateway_namespace }} \
+        -o jsonpath='.spec.listeners[*].name'); do
+      if [ "$NAME" = "https-argocd" ]; then
+        kubectl patch gateway {{ envoy_gateway_name }} -n {{ envoy_gateway_namespace }} \
+          --type=json -p="[{\"op\": \"remove\", \"path\": \"/spec/listeners/$IDX\"}]"
+        break
+      fi
+      IDX=$((IDX+1))
+    done
+    kubectl patch gateway {{ envoy_gateway_name }} -n {{ envoy_gateway_namespace }} \
+      --type=json --patch-file=/tmp/argocd-listener-patch.json
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: argocd_gateway_listener
+  changed_when: true
+
+- name: Create HTTPRoute for ArgoCD
+  ansible.builtin.shell: |
+    cat <<EOF | kubectl apply -f -
+    apiVersion: gateway.networking.k8s.io/v1
+    kind: HTTPRoute
+    metadata:
+      name: argocd
+      namespace: {{ argocd_namespace }}
+    spec:
+      parentRefs:
+        - name: {{ envoy_gateway_name }}
+          namespace: {{ envoy_gateway_namespace }}
+          sectionName: https-argocd
+      hostnames:
+        - {{ argocd_hostname }}
+      rules:
+        - backendRefs:
+            - name: argocd-server
+              port: 80
+    EOF
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: argocd_httproute
+  changed_when: "'created' in argocd_httproute.stdout or 'configured' in argocd_httproute.stdout"

@@ -1,0 +1,95 @@
+# ansible/roles/envoy_gateway/tasks/configure.yml
+---
+- name: Create GatewayClass for Envoy Gateway
+  ansible.builtin.shell: |
+    cat <<EOF | kubectl apply -f -
+    apiVersion: gateway.networking.k8s.io/v1
+    kind: GatewayClass
+    metadata:
+      name: eg
+    spec:
+      controllerName: gateway.envoyproxy.io/gatewayclass-controller
+    EOF
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: gatewayclass_create
+  changed_when: "'created' in gatewayclass_create.stdout or 'configured' in gatewayclass_create.stdout"
+
+- name: Wait for GatewayClass to be Accepted
+  ansible.builtin.shell: |
+    kubectl wait gatewayclass eg \
+      --for=condition=Accepted \
+      --timeout=60s
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  changed_when: false
+
+- name: Configure Envoy Gateway
+  ansible.builtin.shell: |
+    # Créer un Gateway pour Envoy Gateway
+    cat <<EOF | kubectl apply -f -
+    apiVersion: gateway.networking.k8s.io/v1
+    kind: Gateway
+    metadata:
+      name: {{ envoy_gateway_name }}
+      namespace: {{ envoy_gateway_namespace }}
+    spec:
+      gatewayClassName: eg
+      listeners:
+        - name: http
+          protocol: HTTP
+          port: 80
+          allowedRoutes:
+            namespaces:
+              from: All
+    EOF
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: configure_gateway
+  changed_when: "'created' in configure_gateway.stdout or 'configured' in configure_gateway.stdout"
+
+- name: Wait for Envoy LoadBalancer service to be created
+  ansible.builtin.shell: |
+    kubectl get svc -n {{ envoy_gateway_namespace }} \
+      -l "gateway.envoyproxy.io/owning-gateway-name={{ envoy_gateway_name }}" \
+      -o jsonpath='{.items[0].metadata.name}'
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: envoy_svc_name
+  retries: 12
+  delay: 10
+  until: envoy_svc_name.stdout != ""
+  changed_when: false
+
+- name: Patch Envoy LoadBalancer service spec with node externalIPs
+  ansible.builtin.shell: |
+    kubectl patch svc {{ envoy_svc_name.stdout }} \
+      -n {{ envoy_gateway_namespace }} \
+      --type=merge \
+      -p='{"spec": {"externalIPs": ["{{ ansible_host }}"]}}'
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: envoy_svc_patch
+  changed_when: "'patched' in envoy_svc_patch.stdout"
+
+- name: Patch Envoy LoadBalancer service status with node IP (for Gateway address assignment)
+  ansible.builtin.shell: |
+    kubectl patch svc {{ envoy_svc_name.stdout }} \
+      -n {{ envoy_gateway_namespace }} \
+      --subresource=status \
+      --type=merge \
+      -p='{"status": {"loadBalancer": {"ingress": [{"ip": "{{ ansible_host }}"}]}}}'
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: envoy_svc_status_patch
+  changed_when: "'patched' in envoy_svc_status_patch.stdout"
+
+- name: Wait for Gateway to be Programmed (address assigned)
+  ansible.builtin.shell: |
+    kubectl wait gateway {{ envoy_gateway_name }} \
+      -n {{ envoy_gateway_namespace }} \
+      --for=condition=Programmed \
+      --timeout=60s
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  changed_when: false

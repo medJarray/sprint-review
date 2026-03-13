@@ -1,0 +1,24 @@
+# ansible/inventories/dev/group_vars/all.yml
+---
+env_name: dev
+deploy_user: deploy
+timezone: Europe/Paris
+
+# K3s
+k3s_domain: dev.example.com
+
+# Hetzner Cloud token
+# Passé via variable d'environnement : export HCLOUD_TOKEN="your-token"
+# Ansible le récupère automatiquement via lookup('env', ...)
+hcloud_token: "{{ lookup('env', 'HCLOUD_TOKEN') }}"
+
+# cert-manager (Let's Encrypt)
+cert_manager_email: "{{ lookup('env', 'CERT_MANAGER_EMAIL') }}"
+
+# ArgoCD - mot de passe admin (bcrypt hash)
+# Générer : python3 -c 'import bcrypt; print(bcrypt.hashpw(b"MOT_DE_PASSE", bcrypt.gensalt(10)).decode())'
+argocd_admin_password_hash: "{{ lookup('env', 'ARGOCD_ADMIN_PASSWORD_HASH') }}"
+
+# Kargo - mot de passe admin (bcrypt hash) + clé de signature JWT
+kargo_admin_password_hash: "{{ lookup('env', 'KARGO_ADMIN_PASSWORD_HASH') }}"
+kargo_admin_token_signing_key: "{{ lookup('env', 'KARGO_ADMIN_TOKEN_SIGNING_KEY') }}"

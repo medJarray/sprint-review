@@ -1,0 +1,17 @@
+# ansible/roles/observability/tasks/install_promtail.yml
+---
+- name: Set Promtail Helm chart version
+  ansible.builtin.set_fact:
+    promtail_chart_version_flag: "{{ '--version ' + promtail_version if promtail_version != '' else '' }}"
+
+- name: Deploy Promtail with Helm
+  ansible.builtin.shell: |
+    helm upgrade --install promtail grafana/promtail \
+    --namespace {{ promtail_namespace }} \
+    {{ promtail_chart_version_flag }} \
+    --set config.clients[0].url=http://loki.{{ loki_namespace }}.svc.cluster.local:3100/loki/api/v1/push \
+    --create-namespace
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: promtail_install
+  changed_when: "'Release \"promtail\" has been upgraded' in promtail_install.stdout or 'Release \"promtail\" has been installed' in promtail_install.stdout"

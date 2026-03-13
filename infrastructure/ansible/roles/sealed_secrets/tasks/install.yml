@@ -1,0 +1,16 @@
+# ansible/roles/sealed_secrets/tasks/install.yml
+---
+- name: Set Sealed Secrets version
+  ansible.builtin.set_fact:
+    sealed_secrets_version_flag: "{{ '--version ' + sealed_secrets_version if sealed_secrets_version != '' else '' }}"
+
+- name: Deploy Sealed Secrets with Helm
+  ansible.builtin.shell: |
+    helm upgrade --install sealed-secrets sealed-secrets/sealed-secrets \
+    --namespace {{ sealed_secrets_namespace }} \
+    {{ sealed_secrets_version_flag }} \
+    --create-namespace
+  environment: 
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: sealed_secrets_install
+  changed_when: "'Release \"sealed-secrets\" has been upgraded' in sealed_secrets_install.stdout or 'Release \"sealed-secrets\" has been installed' in sealed_secrets_install.stdout"

@@ -1,0 +1,8 @@
+# ansible/roles/argocd/defaults/main.yml
+---
+argocd_version: ""  # Version d'Argo CD (vide = dernière stable)
+argocd_name: "argocd"  # Nom de la release Helm pour Argo CD
+argocd_namespace: argocd  # Namespace pour Argo CD
+kubeconfig_path: /etc/rancher/k3s/k3s.yaml  # Chemin vers le kubeconfig pour les commandes kubectl/helm
+argocd_hostname: "argocd.{{ ansible_host }}.sslip.io"  # Hostname public ArgoCD (sslip.io = DNS gratuit par IP)
+argocd_admin_password_hash: ""  # Bcrypt hash du mot de passe admin (passé via GitHub Secrets)

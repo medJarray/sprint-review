@@ -1,0 +1,55 @@
+# ansible/roles/helm/tasks/install.yml
+---
+- name: Check if Helm is already installed
+  ansible.builtin.stat:
+    path: "{{ helm_install_dir }}/helm"
+  register: helm_binary
+
+- name: Get latest Helm version
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/helm/helm/releases/latest
+    return_content: true
+    headers:
+      Accept: application/vnd.github.v3+json
+  register: helm_latest
+  when:
+    - not helm_binary.stat.exists
+    - helm_version == ""
+  delegate_to: localhost
+  become: false
+
+- name: Set Helm version fact
+  ansible.builtin.set_fact:
+    helm_install_version: "{{ helm_version if helm_version != '' else helm_latest.json.tag_name }}"
+  when: not helm_binary.stat.exists
+
+- name: Download Helm install script
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    dest: /tmp/get_helm.sh
+    mode: '0700'
+  when: not helm_binary.stat.exists
+
+- name: Install Helm
+  ansible.builtin.command:
+    cmd: /tmp/get_helm.sh
+  environment:
+    DESIRED_VERSION: "{{ helm_install_version }}"
+    HELM_INSTALL_DIR: "{{ helm_install_dir }}"
+  when: not helm_binary.stat.exists
+  changed_when: true
+
+- name: Clean up install script
+  ansible.builtin.file:
+    path: /tmp/get_helm.sh
+    state: absent
+
+- name: Verify Helm installation
+  ansible.builtin.command:
+    cmd: helm version --short
+  register: helm_version_output
+  changed_when: false
+
+- name: Show Helm version
+  ansible.builtin.debug:
+    msg: "Helm installed: {{ helm_version_output.stdout }}"

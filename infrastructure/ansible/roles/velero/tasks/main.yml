@@ -1,0 +1,13 @@
+# ansible/roles/velero/tasks/main.yml
+---
+- name: Add Velero Helm repository
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/helm_repo.yml"
+  tags: [velero, helm_repo]
+
+- name: Deploy Velero
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+  tags: [velero, install]
+
+- name: Verify Velero deployment
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/verify.yml"
+  tags: [velero, verify]

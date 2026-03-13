@@ -1,0 +1,18 @@
+# ansible/roles/cert_manager/tasks/main.yml
+---
+- name: Add helm repo for cert-manager
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/helm_repo.yml"
+  tags: [cert_manager, helm_repo]
+
+- name: Install cert-manager using Helm
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+  tags: [cert_manager, install]
+
+- name: Check cert-manager deployment status
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/verify.yml"
+  tags: [cert_manager, status]
+
+- name: Configure cert-manager Issuer
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/configure.yml"
+  tags: [cert_manager, configure]
+

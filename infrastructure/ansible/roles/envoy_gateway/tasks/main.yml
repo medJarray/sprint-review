@@ -1,0 +1,14 @@
+# ansible/roles/envoy_gateway/tasks/main.yml
+---
+
+- name: Deploy Envoy Gateway
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+  tags: [envoy_gateway, install]
+
+- name: Verify Envoy Gateway deployment
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/verify.yml"
+  tags: [envoy_gateway, verify]
+
+- name: Configure Envoy Gateway
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/configure.yml"
+  tags: [envoy_gateway, configure]

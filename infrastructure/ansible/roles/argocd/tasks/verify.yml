@@ -1,0 +1,10 @@
+# ansible/roles/argocd/tasks/verify.yml
+---
+- name: Verify Argo CD deployment
+  ansible.builtin.shell: |
+    kubectl wait --timeout=5m -n {{ argocd_namespace }} deployment/{{ argocd_name }}-server --for=condition=Available
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: argocd_status
+  failed_when: argocd_status.rc != 0
+  changed_when: false

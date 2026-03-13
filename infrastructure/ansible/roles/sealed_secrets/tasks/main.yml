@@ -1,0 +1,13 @@
+# ansible/roles/sealed_secrets/tasks/main.yml
+---
+- name: Add Helm repo for Sealed Secrets
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/helm_repo.yml"
+  tags: [sealed_secrets, helm_repo]
+
+- name: Deploy Sealed Secrets
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+  tags: [sealed_secrets, install]
+
+- name: Verify Sealed Secrets deployment
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/verify.yml"
+  tags: [sealed_secrets, verify]

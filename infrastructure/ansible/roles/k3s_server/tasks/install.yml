@@ -1,0 +1,35 @@
+# ansible/roles/k3s_server/tasks/install.yml
+---
+- name: Check if K3s is already installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/k3s
+  register: k3s_binary
+
+- name: Install K3s server
+  ansible.builtin.shell: |
+    curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC=" \
+      --disable={{ k3s_disable | join(',') }} \
+      --write-kubeconfig-mode 644 \
+      --tls-san {{ ipv4_address }} \
+      --tls-san {{ ipv6_address }} \
+      --tls-san {{ k3s_domain | default('') }} \
+      --cluster-cidr={{ k3s_cluster_cidr }} \
+      --service-cidr={{ k3s_service_cidr }} \
+      --node-ip={{ ipv4_address }},{{ ipv6_address }} \
+      --kube-apiserver-arg=default-not-ready-toleration-seconds=30 \
+      --kube-apiserver-arg=default-unreachable-toleration-seconds=30 \
+      " sh -
+  args:
+    creates: /usr/local/bin/k3s
+  environment:
+    INSTALL_K3S_VERSION: "{{ k3s_version | default(omit) }}"
+
+- name: Wait for K3s to be ready
+  ansible.builtin.command: kubectl get nodes
+  register: k3s_ready
+  retries: 30
+  delay: 10
+  until: k3s_ready.rc == 0
+  changed_when: false
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml

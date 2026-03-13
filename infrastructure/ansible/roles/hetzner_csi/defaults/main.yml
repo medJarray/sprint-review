@@ -1,0 +1,11 @@
+# ansible/roles/hetzner_csi/defaults/main.yml
+---
+# Version du CSI driver (vide = dernière stable via le manifest main)
+hetzner_csi_version: ""
+
+# StorageClass par défaut
+hetzner_csi_default_storage_class: hcloud-volumes
+hetzner_csi_retain_storage_class: hcloud-volumes-retain
+
+# Timeout pour attendre les pods CSI
+hetzner_csi_wait_timeout: 120

@@ -1,0 +1,5 @@
+# ansible/roles/velero/defaults/main.yml
+---
+velero_version: ""  # Version de Velero (vide = dernière stable)
+velero_namespace: "velero"  # Namespace pour Velero
+kubeconfig_path: /etc/rancher/k3s/k3s.yaml  # Chemin vers le kubeconfig pour les commandes kubectl/helm

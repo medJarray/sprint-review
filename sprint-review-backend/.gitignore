@@ -1,0 +1,29 @@
+# Dépendances
+node_modules/
+dist/
+
+# Environnement
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Coverage
+coverage/
+
+# Docker (contient des credentials)
+docker-compose.yml
+
+# Yarn
+.yarn/install-state.gz

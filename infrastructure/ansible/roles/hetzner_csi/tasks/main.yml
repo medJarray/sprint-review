@@ -1,0 +1,63 @@
+# ansible/roles/hetzner_csi/tasks/main.yml
+---
+- name: Validate hcloud_token is defined
+  ansible.builtin.assert:
+    that:
+      - hcloud_token is defined
+      - hcloud_token | length > 0
+    fail_msg: "hcloud_token must be set (via env HCLOUD_TOKEN or group_vars)"
+    quiet: true
+
+- name: Check if hcloud secret already exists
+  ansible.builtin.command:
+    cmd: kubectl -n kube-system get secret hcloud
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  register: hcloud_secret_check
+  failed_when: false
+  changed_when: false
+
+- name: Create hcloud secret for CSI Driver
+  ansible.builtin.shell: |
+    kubectl -n kube-system create secret generic hcloud \
+      --from-literal=token={{ hcloud_token }} \
+      --dry-run=client -o yaml | kubectl apply -f -
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  no_log: true
+  changed_when: hcloud_secret_check.rc != 0
+
+- name: Install Hetzner CSI Driver
+  ansible.builtin.shell: |
+    kubectl apply -f https://raw.githubusercontent.com/hetznercloud/csi-driver/main/deploy/kubernetes/hcloud-csi.yml
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  register: csi_apply
+  changed_when: "'created' in csi_apply.stdout or 'configured' in csi_apply.stdout"
+
+- name: Wait for CSI Driver pods
+  ansible.builtin.shell: |
+    kubectl -n kube-system wait --for=condition=ready pod \
+      -l app.kubernetes.io/name=hcloud-csi --timeout={{ hetzner_csi_wait_timeout }}s
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  retries: 3
+  delay: 10
+  changed_when: false
+
+- name: Create StorageClass with Retain policy
+  ansible.builtin.shell: |
+    cat <<'EOF' | kubectl apply -f -
+    apiVersion: storage.k8s.io/v1
+    kind: StorageClass
+    metadata:
+      name: {{ hetzner_csi_retain_storage_class }}
+    provisioner: csi.hetzner.cloud
+    reclaimPolicy: Retain
+    volumeBindingMode: WaitForFirstConsumer
+    allowVolumeExpansion: true
+    EOF
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  register: sc_apply
+  changed_when: "'created' in sc_apply.stdout or 'configured' in sc_apply.stdout"

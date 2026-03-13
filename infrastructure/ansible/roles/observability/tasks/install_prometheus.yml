@@ -1,0 +1,16 @@
+# ansible/roles/observability/tasks/install_prometheus.yml
+---
+- name: Set Prometheus version
+  ansible.builtin.set_fact:
+    prometheus_stack_version_flag: "{{ '--version ' + prometheus_stack_version if prometheus_stack_version != '' else '' }}"
+
+- name: Deploy Prometheus Stack with Helm
+  ansible.builtin.shell: |
+    helm upgrade --install prometheus-stack prometheus-community/kube-prometheus-stack \
+    --namespace {{ prometheus_stack_namespace }} \
+    {{ prometheus_stack_version_flag }} \
+    --create-namespace
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: prometheus_stack_install
+  changed_when: "'Release \"prometheus-stack\" has been upgraded' in prometheus_stack_install.stdout or 'Release \"prometheus-stack\" has been installed' in prometheus_stack_install.stdout"

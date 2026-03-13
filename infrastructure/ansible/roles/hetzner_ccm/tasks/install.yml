@@ -1,0 +1,70 @@
+# ansible/roles/hetzner_ccm/tasks/install.yml
+---
+- name: Validate hcloud_token is defined
+  ansible.builtin.assert:
+    that:
+      - hcloud_token is defined
+      - hcloud_token | length > 0
+    fail_msg: "hcloud_token must be set (via env HCLOUD_TOKEN or group_vars)"
+    quiet: true
+
+- name: Check if hcloud secret already exists
+  ansible.builtin.command:
+    cmd: kubectl -n kube-system get secret hcloud
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  register: hcloud_secret_check
+  failed_when: false
+  changed_when: false
+
+- name: Create hcloud secret for CCM
+  ansible.builtin.shell: |
+    kubectl -n kube-system create secret generic hcloud \
+      --from-literal=token={{ hcloud_token }} \
+      {% if hetzner_ccm_network != "" %}--from-literal=network={{ hetzner_ccm_network }}{% endif %} \
+      --dry-run=client -o yaml | kubectl apply -f -
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  no_log: true
+  changed_when: hcloud_secret_check.rc != 0
+
+- name: Deploy Hetzner CCM (standalone — no private network)
+  ansible.builtin.shell: |
+    kubectl apply -f https://github.com/hetznercloud/hcloud-cloud-controller-manager/releases/latest/download/ccm.yaml
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  register: ccm_apply
+  changed_when: "'created' in ccm_apply.stdout or 'configured' in ccm_apply.stdout"
+  when: hetzner_ccm_network == ""
+
+- name: Deploy Hetzner CCM (with private network)
+  ansible.builtin.shell: |
+    kubectl apply -f https://github.com/hetznercloud/hcloud-cloud-controller-manager/releases/latest/download/ccm-networks.yaml
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  register: ccm_net_apply
+  changed_when: "'created' in ccm_net_apply.stdout or 'configured' in ccm_net_apply.stdout"
+  when: hetzner_ccm_network != ""
+
+- name: Wait for CCM pod to be ready
+  ansible.builtin.shell: |
+    kubectl -n kube-system wait --for=condition=ready pod \
+      -l app=hcloud-cloud-controller-manager \
+      --timeout={{ hetzner_ccm_wait_timeout }}s
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  retries: 5
+  delay: 15
+  changed_when: false
+
+- name: Verify CCM is running
+  ansible.builtin.command:
+    cmd: kubectl -n kube-system get pods -l app=hcloud-cloud-controller-manager -o wide
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  register: ccm_pods
+  changed_when: false
+
+- name: Show CCM pod status
+  ansible.builtin.debug:
+    msg: "{{ ccm_pods.stdout_lines }}"

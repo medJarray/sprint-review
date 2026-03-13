@@ -1,0 +1,18 @@
+# ansible/roles/cert_manager/tasks/install.yml
+---
+- name: Set cert-manager version
+  ansible.builtin.set_fact:
+    cert_manager_version_flag: "{{ '--version ' + cert_manager_version if cert_manager_version != '' else '' }}"
+
+- name: Install cert-manager
+  ansible.builtin.shell: |
+    helm upgrade --install cert-manager jetstack/cert-manager \
+    --namespace cert-manager \
+    --create-namespace \
+    --set crds.enabled=true \
+    --set "extraArgs={--enable-gateway-api}" \
+    {{ cert_manager_version_flag }}
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: cert_manager_install
+  changed_when: "'Release \"cert-manager\" has been upgraded' in cert_manager_install.stdout or 'Release \"cert-manager\" has been installed' in cert_manager_install.stdout"

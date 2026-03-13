@@ -1,0 +1,22 @@
+# ansible/roles/cert_manager/defaults/main.yaml
+---
+# Version de cert-manager
+cert_manager_version: ""
+
+# Namespace pour cert-manager
+cert_manager_namespace: cert-manager
+
+# Timeout pour attendre que cert-manager soit prêt
+cert_manager_wait_timeout: 120
+
+# Email pour les ACME issuers (Let's Encrypt)
+cert_manager_email: ""
+
+# Chemin vers le kubeconfig pour les commandes kubectl/helm
+kubeconfig_path: /etc/rancher/k3s/k3s.yaml
+
+# Nom du Gateway pour cert-manager (utilisé pour les ACME issuers)
+cert_manager_gateway_name: envoy-gateway-gw
+
+# Namespace du Gateway pour cert-manager (utilisé pour les ACME issuers)
+cert_manager_gateway_namespace: envoy-gateway-system

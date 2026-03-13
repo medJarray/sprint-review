@@ -1,0 +1,52 @@
+# ansible/roles/security/tasks/ufw.yml
+---
+- name: Install UFW
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+
+- name: Set UFW default deny incoming
+  community.general.ufw:
+    state: enabled
+    direction: incoming
+    policy: deny
+
+- name: Set UFW default allow outgoing
+  community.general.ufw:
+    direction: outgoing
+    policy: allow
+
+- name: Allow SSH
+  community.general.ufw:
+    rule: allow
+    port: "22"
+    proto: tcp
+    comment: "SSH"
+
+- name: Allow K3s API server
+  community.general.ufw:
+    rule: allow
+    port: "6443"
+    proto: tcp
+    comment: "K3s API"
+
+- name: Allow Kubelet metrics
+  community.general.ufw:
+    rule: allow
+    port: "10250"
+    proto: tcp
+    comment: "Kubelet"
+
+- name: Allow HTTP
+  community.general.ufw:
+    rule: allow
+    port: "80"
+    proto: tcp
+    comment: "HTTP"
+
+- name: Allow HTTPS
+  community.general.ufw:
+    rule: allow
+    port: "443"
+    proto: tcp
+    comment: "HTTPS"

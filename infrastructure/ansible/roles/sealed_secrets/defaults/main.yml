@@ -1,0 +1,5 @@
+# ansible/roles/sealed_secrets/defaults/main.yml
+---
+sealed_secrets_version: ""  # Version de Sealed Secrets (vide = dernière stable)
+sealed_secrets_namespace: sealed-secrets  # Namespace pour Sealed Secrets
+kubeconfig_path: /etc/rancher/k3s/k3s.yaml  # Chemin vers le kubeconfig pour les commandes kubectl/helm

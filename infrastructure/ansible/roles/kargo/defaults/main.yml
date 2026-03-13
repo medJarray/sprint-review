@@ -1,0 +1,8 @@
+# ansible/roles/kargo/defaults/main.yml
+---
+kargo_version: ""  # Vide = dernière stable
+kargo_namespace: kargo # Namespace pour Kargo
+kubeconfig_path: /etc/rancher/k3s/k3s.yaml  # Chemin vers le kubeconfig pour les commandes kubectl/helm
+kargo_hostname: "kargo.{{ ansible_host }}.sslip.io"  # Hostname public Kargo (sslip.io = DNS gratuit par IP)
+kargo_admin_password_hash: ""
+kargo_admin_token_signing_key: ""

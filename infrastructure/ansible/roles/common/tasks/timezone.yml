@@ -1,0 +1,5 @@
+# ansible/roles/common/tasks/timezone.yml
+---
+- name: Set timezone
+  ansible.builtin.timezone:
+    name: "{{ timezone }}"

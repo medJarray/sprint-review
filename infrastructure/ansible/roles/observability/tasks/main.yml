@@ -1,0 +1,21 @@
+# ansible/roles/observability/tasks/main.yml
+---
+- name: Add all helm repos for Observability stack
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/helm_repo.yml"
+  tags: [observability, helm_repo]
+
+- name: Deploy Prometheus Stack
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/install_prometheus.yml"
+  tags: [observability, prometheus_stack, install]
+
+- name: Deploy Loki
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/install_loki.yml"
+  tags: [observability, loki, install]
+
+- name: Deploy Promtail
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/install_promtail.yml"
+  tags: [observability, promtail, install]
+
+- name: Verify Observability stack deployment
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/verify.yml"
+  tags: [observability, verify]
