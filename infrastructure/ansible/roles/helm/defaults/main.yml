@@ -1,0 +1,4 @@
+# ansible/roles/helm/defaults/main.yml
+---
+helm_version: ""  # Vide = dernière stable
+helm_install_dir: /usr/local/bin

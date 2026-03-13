@@ -1,0 +1,655 @@
+{
+  "info": {
+    "name": "🚀 Sprint Review API",
+    "description": "Collection complète pour tester l'API Sprint Review Backend — 11 modules, toutes les routes CRUD avec payloads d'exemple.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001/api",
+      "type": "string"
+    },
+    {
+      "key": "sprintId",
+      "value": "sprint-default",
+      "type": "string"
+    },
+    {
+      "key": "attachmentId",
+      "value": "REMPLACER_PAR_ID_MONGODB",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1 — 🏃 Sprints",
+      "description": "Informations de base du sprint (nom, dates, objectif)",
+      "item": [
+        {
+          "name": "Créer un sprint",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/sprints", "host": ["{{baseUrl}}"], "path": ["sprints"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sprintId\": \"sprint-default\",\n  \"name\": \"Projet Alpha\",\n  \"number\": 24,\n  \"goal\": \"Refonte UX Mobile\",\n  \"startDate\": \"2026-01-12\",\n  \"endDate\": \"2026-01-23\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Lister tous les sprints",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/sprints", "host": ["{{baseUrl}}"], "path": ["sprints"] }
+          }
+        },
+        {
+          "name": "Récupérer un sprint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/sprints/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["sprints", "{{sprintId}}"] }
+          }
+        },
+        {
+          "name": "Mettre à jour un sprint",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/sprints/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["sprints", "{{sprintId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"goal\": \"Refonte UX Mobile + Paiement\",\n  \"endDate\": \"2026-01-30\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Supprimer un sprint",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/sprints/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["sprints", "{{sprintId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2 — 👥 Teams",
+      "description": "Équipes et leurs membres",
+      "item": [
+        {
+          "name": "Créer une équipe",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/teams", "host": ["{{baseUrl}}"], "path": ["teams"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sprintId\": \"{{sprintId}}\",\n  \"teamId\": \"squad-alpha\",\n  \"name\": \"Squad Alpha\",\n  \"members\": [\n    { \"id\": \"1\", \"name\": \"Alice Martin\", \"role\": \"Product Owner\", \"initials\": \"AM\", \"color\": \"#3B82F6\" },\n    { \"id\": \"2\", \"name\": \"Lucas Dubois\", \"role\": \"Scrum Master\", \"initials\": \"LD\", \"color\": \"#6366F1\" },\n    { \"id\": \"3\", \"name\": \"Sarah Martin\", \"role\": \"QA Lead\", \"initials\": \"SM\", \"color\": \"#8B5CF6\" },\n    { \"id\": \"4\", \"name\": \"Thomas Roux\", \"role\": \"Dev Frontend\", \"initials\": \"TR\", \"color\": \"#EF4444\" },\n    { \"id\": \"5\", \"name\": \"Julie Bernard\", \"role\": \"Dev Backend\", \"initials\": \"JB\", \"color\": \"#F59E0B\" },\n    { \"id\": \"6\", \"name\": \"Nicolas Petit\", \"role\": \"Designer UX\", \"initials\": \"NP\", \"color\": \"#10B981\" }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Lister les équipes d'un sprint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/teams?sprintId={{sprintId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["teams"],
+              "query": [{ "key": "sprintId", "value": "{{sprintId}}" }]
+            }
+          }
+        },
+        {
+          "name": "Récupérer une équipe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/teams/{{sprintId}}/squad-alpha", "host": ["{{baseUrl}}"], "path": ["teams", "{{sprintId}}", "squad-alpha"] }
+          }
+        },
+        {
+          "name": "Mettre à jour une équipe",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/teams/{{sprintId}}/squad-alpha", "host": ["{{baseUrl}}"], "path": ["teams", "{{sprintId}}", "squad-alpha"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Squad Alpha Renforcée\",\n  \"members\": [\n    { \"id\": \"1\", \"name\": \"Alice Martin\", \"role\": \"Product Owner\", \"initials\": \"AM\", \"color\": \"#3B82F6\" },\n    { \"id\": \"2\", \"name\": \"Lucas Dubois\", \"role\": \"Scrum Master\", \"initials\": \"LD\", \"color\": \"#6366F1\" },\n    { \"id\": \"7\", \"name\": \"Emma Durand\", \"role\": \"Dev Fullstack\", \"initials\": \"ED\", \"color\": \"#EC4899\" }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Supprimer une équipe",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/teams/{{sprintId}}/squad-alpha", "host": ["{{baseUrl}}"], "path": ["teams", "{{sprintId}}", "squad-alpha"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3 — 🎯 Objectives",
+      "description": "Objectifs SMART, critères de succès, contraintes, DoD",
+      "item": [
+        {
+          "name": "Créer/remplacer les objectifs (upsert)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/objectives", "host": ["{{baseUrl}}"], "path": ["objectives"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sprintId\": \"{{sprintId}}\",\n  \"objectives\": [\n    {\n      \"id\": \"1\",\n      \"title\": \"Finaliser l'Épique \\\"Paiement One-Click\\\"\",\n      \"description\": \"Implémenter le flux complet de paiement simplifié pour les utilisateurs connectés afin d'augmenter le taux de conversion mobile de 15%.\",\n      \"priority\": \"Priorité Haute\",\n      \"scope\": \"Checkout & Paiement\",\n      \"epicLink\": \"EPIC-42\",\n      \"borderColor\": \"border-blue-600\"\n    },\n    {\n      \"id\": \"2\",\n      \"title\": \"Optimisation des Performances\",\n      \"description\": \"Réduire le temps de chargement de la page d'accueil mobile de 20% (cible < 1.5s).\",\n      \"priority\": \"Priorité Moyenne\",\n      \"scope\": \"Core Performance\",\n      \"borderColor\": \"border-indigo-500\"\n    },\n    {\n      \"id\": \"3\",\n      \"title\": \"Analytics V2 & Tracking\",\n      \"description\": \"Mettre à jour le plan de marquage pour capturer les abandons de panier.\",\n      \"priority\": \"Tech Enabler\",\n      \"scope\": \"Data Analytics\",\n      \"borderColor\": \"border-teal-500\"\n    }\n  ],\n  \"successCriteria\": [\n    { \"id\": \"1\", \"text\": \"Taux de conversion > 2.5% sur mobile\" },\n    { \"id\": \"2\", \"text\": \"Zéro régression critique (P0) sur le checkout\" },\n    { \"id\": \"3\", \"text\": \"Score Lighthouse Performance > 90\" }\n  ],\n  \"constraints\": [\n    { \"id\": \"1\", \"text\": \"Dépendance API Paiement (livraison J+2)\" },\n    { \"id\": \"2\", \"text\": \"Code Freeze DB : Pas de migration schéma\" }\n  ],\n  \"dodItems\": [\n    { \"id\": \"1\", \"text\": \"Code Review\" },\n    { \"id\": \"2\", \"text\": \"Unit Tests > 80%\" },\n    { \"id\": \"3\", \"text\": \"Doc Technique\" },\n    { \"id\": \"4\", \"text\": \"Déployé en Staging\" }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Récupérer les objectifs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/objectives/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["objectives", "{{sprintId}}"] }
+          }
+        },
+        {
+          "name": "Mettre à jour (partiel)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/objectives/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["objectives", "{{sprintId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"successCriteria\": [\n    { \"id\": \"1\", \"text\": \"Taux de conversion > 3% sur mobile\" },\n    { \"id\": \"2\", \"text\": \"Zéro régression critique (P0)\" }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Supprimer les objectifs",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/objectives/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["objectives", "{{sprintId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4 — 📋 Backlog",
+      "description": "Enablers (épiques) avec User Stories + Tâches techniques",
+      "item": [
+        {
+          "name": "Créer/remplacer le backlog (upsert)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/backlog", "host": ["{{baseUrl}}"], "path": ["backlog"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sprintId\": \"{{sprintId}}\",\n  \"enablers\": [\n    {\n      \"id\": \"1\",\n      \"epicId\": \"EPIC-42\",\n      \"name\": \"Checkout & Paiement\",\n      \"bgColor\": \"bg-blue-50\",\n      \"textColor\": \"text-blue-800\",\n      \"iconColor\": \"text-blue-500\",\n      \"stories\": [\n        {\n          \"id\": \"1\",\n          \"storyId\": \"US-101\",\n          \"title\": \"Paiement One-Click Mobile\",\n          \"points\": 8,\n          \"asA\": \"client mobile connecté\",\n          \"iWant\": \"payer ma commande en un seul clic\",\n          \"soThat\": \"gagner du temps lors de mes achats récurrents\",\n          \"ac\": \"Bouton visible uniquement si CB enregistrée • Confirmation biométrique • Redirection page succès < 2s.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"2\",\n      \"epicId\": \"EPIC-38\",\n      \"name\": \"Core Performance\",\n      \"bgColor\": \"bg-indigo-50\",\n      \"textColor\": \"text-indigo-800\",\n      \"iconColor\": \"text-indigo-500\",\n      \"stories\": [\n        {\n          \"id\": \"2\",\n          \"storyId\": \"US-102\",\n          \"title\": \"Optimisation Assets Home\",\n          \"points\": 5,\n          \"asA\": \"visiteur mobile\",\n          \"iWant\": \"que la page d'accueil s'affiche instantanément\",\n          \"soThat\": \"ne pas être frustré par le temps de chargement\",\n          \"ac\": \"Images converties en WebP • Lazy loading activé • TTI < 1.5s.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"3\",\n      \"epicId\": \"EPIC-55\",\n      \"name\": \"Data Analytics\",\n      \"bgColor\": \"bg-teal-50\",\n      \"textColor\": \"text-teal-800\",\n      \"iconColor\": \"text-teal-500\",\n      \"stories\": [\n        {\n          \"id\": \"3\",\n          \"storyId\": \"US-103\",\n          \"title\": \"Tracking Abandons Panier\",\n          \"points\": 3,\n          \"asA\": \"Product Owner\",\n          \"iWant\": \"des données précises sur l'étape d'abandon\",\n          \"soThat\": \"comprendre les points de friction\"\n        }\n      ]\n    }\n  ],\n  \"techTasks\": [\n    { \"id\": \"1\", \"taskId\": \"TECH-45\", \"title\": \"Upgrade React Native 0.72\", \"points\": 3, \"type\": \"tech\" },\n    { \"id\": \"2\", \"taskId\": \"BUG-89\", \"title\": \"Fix Login Spinner iOS\", \"points\": 2, \"type\": \"bug\" }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Récupérer le backlog",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/backlog/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["backlog", "{{sprintId}}"] }
+          }
+        },
+        {
+          "name": "Mettre à jour le backlog",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/backlog/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["backlog", "{{sprintId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"techTasks\": [\n    { \"id\": \"1\", \"taskId\": \"TECH-45\", \"title\": \"Upgrade React Native 0.72\", \"points\": 3, \"type\": \"tech\" },\n    { \"id\": \"2\", \"taskId\": \"BUG-89\", \"title\": \"Fix Login Spinner iOS\", \"points\": 2, \"type\": \"bug\" },\n    { \"id\": \"3\", \"taskId\": \"TECH-50\", \"title\": \"Migration Axios → Fetch\", \"points\": 2, \"type\": \"tech\" }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Supprimer le backlog",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/backlog/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["backlog", "{{sprintId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5 — ✅ Realizations",
+      "description": "Feature cards, small cards, items différés, note équipe, métriques de valeur",
+      "item": [
+        {
+          "name": "Créer/remplacer les réalisations (upsert)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/realizations", "host": ["{{baseUrl}}"], "path": ["realizations"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sprintId\": \"{{sprintId}}\",\n  \"featureCards\": [\n    {\n      \"id\": \"1\",\n      \"storyId\": \"US-101\",\n      \"title\": \"Paiement One-Click Mobile\",\n      \"description\": \"Implémentation complète du flux de paiement simplifié. Intégration biométrique (FaceID/TouchID).\",\n      \"status\": \"deployed\",\n      \"impact\": \"Impact : Checkout -30s\",\n      \"prLink\": \"PR #452 Merged\",\n      \"assignees\": [\"LD\", \"SM\"]\n    },\n    {\n      \"id\": \"2\",\n      \"storyId\": \"US-102\",\n      \"title\": \"Optimisation Assets Home\",\n      \"description\": \"Migration des assets vers WebP + lazy-loading natif. Réduction du poids de la page d'accueil.\",\n      \"status\": \"validated\",\n      \"impact\": \"TTI < 1.5s\",\n      \"prLink\": \"Doc Tech Mise à jour\",\n      \"assignees\": [\"TR\"]\n    },\n    {\n      \"id\": \"3\",\n      \"storyId\": \"TECH-45\",\n      \"title\": \"Upgrade React Native 0.72\",\n      \"description\": \"Mise à jour du framework avec migration des APIs dépréciées.\",\n      \"status\": \"testing\",\n      \"impact\": \"80% des tests passés\",\n      \"prLink\": \"PR #467 Open\",\n      \"assignees\": [\"AM\"]\n    }\n  ],\n  \"smallCards\": [\n    { \"id\": \"1\", \"type\": \"Tech Debt\", \"title\": \"Refactor API Client\", \"description\": \"Standardisation des retours d'erreur\", \"status\": \"done\" },\n    { \"id\": \"2\", \"type\": \"Fix Bug\", \"title\": \"Login Spinner iOS\", \"description\": \"Correction boucle infinie iPhone 14\", \"status\": \"fixed\" },\n    { \"id\": \"3\", \"type\": \"Fix Bug\", \"title\": \"Crash WebView Android\", \"description\": \"Reproductible sur Android 12. Attente fix upstream.\", \"status\": \"blocked\" },\n    { \"id\": \"4\", \"type\": \"Amélioration\", \"title\": \"Cache API Produits\", \"description\": \"Réduction des appels réseau de 40%\", \"status\": \"testing\" }\n  ],\n  \"deferredItems\": [\n    { \"id\": \"1\", \"storyId\": \"US-103\", \"title\": \"Tracking Abandons Panier\", \"reason\": \"Dépendance data non livrée.\" }\n  ],\n  \"teamNote\": \"La mise en place de WebP a nécessité plus de tests QA que prévu sur Safari iOS.\",\n  \"valueMetrics\": [\n    { \"id\": \"1\", \"label\": \"Conv. Mobile\", \"value\": \"+12%\", \"subText\": \"(Proj.)\", \"bgColor\": \"bg-green-50\", \"borderColor\": \"border-green-100\", \"iconColor\": \"text-green-600\", \"icon\": \"fa-shopping-cart\" },\n    { \"id\": \"2\", \"label\": \"Lighthouse\", \"value\": \"92\", \"subText\": \"/ 100\", \"bgColor\": \"bg-blue-50\", \"borderColor\": \"border-blue-100\", \"iconColor\": \"text-blue-600\", \"icon\": \"fa-tachometer-alt\" }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Récupérer les réalisations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/realizations/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["realizations", "{{sprintId}}"] }
+          }
+        },
+        {
+          "name": "Mettre à jour (partiel)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/realizations/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["realizations", "{{sprintId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"teamNote\": \"WebP validé sur Safari iOS après correctif. Déploiement prod confirmé.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Supprimer les réalisations",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/realizations/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["realizations", "{{sprintId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6 — 🎬 Demo Configs",
+      "description": "Configuration de la démo et étapes",
+      "item": [
+        {
+          "name": "Créer/remplacer la config démo (upsert)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/demo-configs", "host": ["{{baseUrl}}"], "path": ["demo-configs"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sprintId\": \"{{sprintId}}\",\n  \"environment\": \"Staging (QA)\",\n  \"testAccount\": \"demo_user_01\",\n  \"version\": \"v2.4.0-rc.1\",\n  \"demoOwner\": \"Sarah Martin\",\n  \"demoOwnerInitials\": \"SM\",\n  \"videoLink\": \"Voir l'enregistrement complet (.mp4)\",\n  \"figmaLink\": \"Maquettes Figma\",\n  \"steps\": [\n    {\n      \"id\": \"1\",\n      \"stepNumber\": 1,\n      \"title\": \"Contexte & Entrée\",\n      \"description\": \"L'utilisateur se connecte sur l'app mobile. Le panier contient déjà 2 articles.\",\n      \"note\": \"Données: Panier ID #9822\",\n      \"isActive\": true\n    },\n    {\n      \"id\": \"2\",\n      \"stepNumber\": 2,\n      \"title\": \"Action: Checkout One-Click\",\n      \"description\": \"Clic sur 'Payer maintenant'. Le système détecte la carte enregistrée et demande la biométrie.\",\n      \"featureRef\": \"Feature US-101\",\n      \"isActive\": true\n    },\n    {\n      \"id\": \"3\",\n      \"stepNumber\": 3,\n      \"title\": \"Résultat Attendu\",\n      \"description\": \"Validation immédiate sans saisie CVV. Redirection vers la page de confirmation en moins de 2s.\",\n      \"isActive\": false\n    },\n    {\n      \"id\": \"4\",\n      \"stepNumber\": 4,\n      \"title\": \"Cas Limites (Optionnel)\",\n      \"description\": \"Simulation erreur réseau (Mode Avion) lors du paiement pour vérifier le message d'erreur.\",\n      \"isActive\": false\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Récupérer la config démo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/demo-configs/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["demo-configs", "{{sprintId}}"] }
+          }
+        },
+        {
+          "name": "Mettre à jour la config démo",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/demo-configs/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["demo-configs", "{{sprintId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"version\": \"v2.4.0-rc.2\",\n  \"environment\": \"Pre-Prod\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Supprimer la config démo",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/demo-configs/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["demo-configs", "{{sprintId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7 — 📊 Metrics",
+      "description": "KPIs, burndown, vélocité, quality gates, insights positifs/négatifs",
+      "item": [
+        {
+          "name": "Créer/remplacer les métriques (upsert)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/metrics", "host": ["{{baseUrl}}"], "path": ["metrics"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sprintId\": \"{{sprintId}}\",\n  \"sprintMetrics\": {\n    \"plannedPoints\": 42,\n    \"completedPoints\": 41\n  },\n  \"kpiCards\": [\n    { \"id\": \"1\", \"label\": \"Vélocité\", \"value\": \"41\", \"unit\": \"/ 42 pts\", \"badgeText\": \"98%\", \"badgeType\": \"up\", \"subText\": \"Réalisé\", \"borderColor\": \"border-blue-500\" },\n    { \"id\": \"2\", \"label\": \"Cycle Time Moyen\", \"value\": \"2.4\", \"unit\": \"jours\", \"badgeText\": \"Stable\", \"badgeType\": \"stable\", \"subText\": \"Cible < 3j\", \"borderColor\": \"border-indigo-500\" },\n    { \"id\": \"3\", \"label\": \"Qualité (Bugs)\", \"value\": \"2\", \"unit\": \"trouvés\", \"badgeText\": \"100% Fix\", \"badgeType\": \"check\", \"subText\": \"0 Bloquant\", \"borderColor\": \"border-green-500\" },\n    { \"id\": \"4\", \"label\": \"Team Happiness\", \"value\": \"4.5\", \"unit\": \"/ 5\", \"badgeText\": \"Top\", \"badgeType\": \"smile\", \"subText\": \"NPS Équipe\", \"borderColor\": \"border-purple-500\" }\n  ],\n  \"burndownIdeal\": [42, 37.8, 33.6, 29.4, 25.2, 21, 16.8, 12.6, 8.4, 0],\n  \"burndownReal\": [42, 42, 38, 35, 32, 22, 18, 18, 10, 1],\n  \"velocityHistory\": [\n    { \"label\": \"S20\", \"value\": 35 },\n    { \"label\": \"S21\", \"value\": 38 },\n    { \"label\": \"S22\", \"value\": 36 },\n    { \"label\": \"S23\", \"value\": 40 },\n    { \"label\": \"S24\", \"value\": 41 }\n  ],\n  \"insightsGood\": [\n    { \"id\": \"1\", \"text\": \"Collaboration dev/QA fluide sur les tickets critiques.\" },\n    { \"id\": \"2\", \"text\": \"Estimation précise des User Stories complexes (US-101).\" },\n    { \"id\": \"3\", \"text\": \"Absence de changement de scope en cours de sprint.\" }\n  ],\n  \"insightsBad\": [\n    { \"id\": \"1\", \"text\": \"Le temps de Code Review a légèrement augmenté (+15%).\" },\n    { \"id\": \"2\", \"text\": \"L'environnement de staging a été instable le jour 4.\" },\n    { \"id\": \"3\", \"text\": \"Dette technique : couverture de tests JS à renforcer.\" }\n  ],\n  \"qualityGate\": {\n    \"unitTests\": 88,\n    \"sonarGrade\": \"A\",\n    \"e2eTests\": 100\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Récupérer les métriques",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/metrics/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["metrics", "{{sprintId}}"] }
+          }
+        },
+        {
+          "name": "Mettre à jour (partiel — ex: burndown)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/metrics/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["metrics", "{{sprintId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"burndownReal\": [42, 42, 38, 35, 32, 22, 18, 15, 5, 0],\n  \"sprintMetrics\": {\n    \"completedPoints\": 42\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Supprimer les métriques",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/metrics/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["metrics", "{{sprintId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8 — 📈 Backlog Evolution",
+      "description": "Santé backlog, progression épiques, changements, matrice priorisation",
+      "item": [
+        {
+          "name": "Créer/remplacer l'évolution backlog (upsert)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/backlog-evolution", "host": ["{{baseUrl}}"], "path": ["backlog-evolution"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sprintId\": \"{{sprintId}}\",\n  \"backlogHealth\": {\n    \"totalItems\": 127,\n    \"readyPercent\": 68,\n    \"avgAge\": \"12j\",\n    \"distribution\": [\n      { \"label\": \"To Do\", \"count\": 45, \"pct\": 35, \"color\": \"bg-blue-500\" },\n      { \"label\": \"In Refinement\", \"count\": 38, \"pct\": 30, \"color\": \"bg-yellow-500\" },\n      { \"label\": \"Ready\", \"count\": 44, \"pct\": 35, \"color\": \"bg-green-500\" }\n    ]\n  },\n  \"epicsProgress\": [\n    {\n      \"id\": \"1\", \"epicId\": \"EPIC-42\", \"name\": \"Paiement One-Click\",\n      \"description\": \"Simplification du parcours de paiement mobile\",\n      \"pct\": 75, \"done\": 12, \"total\": 16, \"targetSprint\": 25,\n      \"bgColor\": \"bg-purple-50\", \"borderColor\": \"border-purple-100\",\n      \"badgeBg\": \"bg-purple-200\", \"badgeText\": \"text-purple-900\",\n      \"barColor\": \"bg-purple-600\", \"targetColor\": \"text-purple-700\", \"pctColor\": \"text-purple-900\"\n    },\n    {\n      \"id\": \"2\", \"epicId\": \"EPIC-38\", \"name\": \"Performance Mobile\",\n      \"description\": \"Optimisation vitesse de chargement & UX\",\n      \"pct\": 45, \"done\": 5, \"total\": 11, \"targetSprint\": 26,\n      \"bgColor\": \"bg-blue-50\", \"borderColor\": \"border-blue-100\",\n      \"badgeBg\": \"bg-blue-200\", \"badgeText\": \"text-blue-900\",\n      \"barColor\": \"bg-blue-600\", \"targetColor\": \"text-blue-700\", \"pctColor\": \"text-blue-900\"\n    },\n    {\n      \"id\": \"3\", \"epicId\": \"EPIC-51\", \"name\": \"Analytics V2\",\n      \"description\": \"Nouveau plan de marquage & dashboards\",\n      \"pct\": 20, \"done\": 2, \"total\": 10, \"targetSprint\": 27,\n      \"bgColor\": \"bg-teal-50\", \"borderColor\": \"border-teal-100\",\n      \"badgeBg\": \"bg-teal-200\", \"badgeText\": \"text-teal-900\",\n      \"barColor\": \"bg-teal-600\", \"targetColor\": \"text-teal-700\", \"pctColor\": \"text-teal-900\"\n    }\n  ],\n  \"backlogChanges\": {\n    \"added\": 14,\n    \"removed\": 8,\n    \"reprioritized\": 5,\n    \"reasons\": [\n      \"Nouveaux besoins business identifiés (8 items)\",\n      \"Items obsolètes supprimés (5 items)\",\n      \"Ajustement priorités business (5 items)\"\n    ]\n  },\n  \"prioritizationMatrix\": {\n    \"quickWins\": [\n      { \"id\": \"1\", \"storyId\": \"US-145\", \"title\": \"Filtres recherche avancée\", \"points\": 3 },\n      { \"id\": \"2\", \"storyId\": \"US-156\", \"title\": \"Export historique CSV\", \"points\": 2 }\n    ],\n    \"majorProjects\": [\n      { \"id\": \"3\", \"storyId\": \"US-167\", \"title\": \"Recommandations IA\", \"points\": 13 }\n    ],\n    \"fillIns\": [\n      { \"id\": \"4\", \"storyId\": \"BUG-92\", \"title\": \"Fix tooltip IE11\", \"points\": 1 }\n    ],\n    \"timeSinks\": [\n      { \"id\": \"5\", \"storyId\": \"TECH-78\", \"title\": \"Migration DB legacy\", \"points\": 8 }\n    ],\n    \"insights\": [\n      \"Focus sur Quick Wins pour sprint #25 (ROI rapide)\",\n      \"US-167 (IA) nécessite décomposition avant planning\",\n      \"Migration DB reportée à Q2 (faible priorité business)\"\n    ]\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Récupérer l'évolution backlog",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/backlog-evolution/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["backlog-evolution", "{{sprintId}}"] }
+          }
+        },
+        {
+          "name": "Mettre à jour (partiel)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/backlog-evolution/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["backlog-evolution", "{{sprintId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"backlogHealth\": {\n    \"totalItems\": 130,\n    \"readyPercent\": 72,\n    \"avgAge\": \"11j\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Supprimer l'évolution backlog",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/backlog-evolution/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["backlog-evolution", "{{sprintId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "9 — ➡️ Next Steps",
+      "description": "Candidats prochain sprint, décisions, risques, dates clés",
+      "item": [
+        {
+          "name": "Créer/remplacer les prochaines étapes (upsert)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/next-steps", "host": ["{{baseUrl}}"], "path": ["next-steps"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sprintId\": \"{{sprintId}}\",\n  \"nextSprintCandidates\": [\n    { \"id\": \"1\", \"storyId\": \"US-104\", \"title\": \"Intégration Apple Pay\", \"description\": \"Permettre le paiement natif iOS sans redirection\", \"priority\": \"high\", \"points\": 8, \"type\": \"us\" },\n    { \"id\": \"2\", \"storyId\": \"US-105\", \"title\": \"Dashboard Analytics V2\", \"description\": \"Ajout des métriques de rétention par cohorte\", \"priority\": \"medium\", \"points\": 5, \"type\": \"us\" },\n    { \"id\": \"3\", \"storyId\": \"SPIKE\", \"title\": \"Étude Migration Cloud\", \"description\": \"POC sur AWS Lambda pour le traitement image\", \"priority\": \"\", \"points\": 3, \"type\": \"spike\" },\n    { \"id\": \"4\", \"storyId\": \"US-108\", \"title\": \"Mode Sombre (Dark Mode)\", \"description\": \"Adaptation de la charte graphique mobile\", \"priority\": \"low\", \"points\": 5, \"type\": \"us\" }\n  ],\n  \"decisions\": [\n    { \"id\": \"1\", \"title\": \"Validation Design System\", \"description\": \"Besoin du GO de l'équipe UX pour les nouveaux composants 'Cards'.\", \"icon\": \"fa-question-circle\" },\n    { \"id\": \"2\", \"title\": \"Licence API Maps\", \"description\": \"Validation budget pour passer au tier pro Google Maps.\", \"icon\": \"fa-file-contract\" }\n  ],\n  \"risks\": [\n    { \"id\": \"1\", \"text\": \"Congés équipe : Lead Dev absent 3 jours semaine prochaine.\" },\n    { \"id\": \"2\", \"text\": \"Env. Staging : Maintenance prévue par DevOps mardi matin.\" }\n  ],\n  \"keyDates\": [\n    { \"id\": \"1\", \"date\": \"Aujourd'hui, 16h00\", \"title\": \"Clôture Sprint & Retro\", \"color\": \"bg-green-500\" },\n    { \"id\": \"2\", \"date\": \"Demain, 10h00\", \"title\": \"Planning Sprint #25\", \"color\": \"bg-blue-500\" },\n    { \"id\": \"3\", \"date\": \"30 Janvier\", \"title\": \"Release v2.5.0 (Prod)\", \"color\": \"bg-gray-300\" }\n  ],\n  \"nextSprintDate\": \"26 Janvier\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Récupérer les prochaines étapes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/next-steps/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["next-steps", "{{sprintId}}"] }
+          }
+        },
+        {
+          "name": "Mettre à jour (partiel — ex: risques)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/next-steps/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["next-steps", "{{sprintId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"risks\": [\n    { \"id\": \"1\", \"text\": \"Congés équipe : Lead Dev absent 3 jours semaine prochaine.\" },\n    { \"id\": \"2\", \"text\": \"Env. Staging : Maintenance prévue par DevOps mardi matin.\" },\n    { \"id\": \"3\", \"text\": \"Dépendance externe : API partenaire en maintenance vendredi.\" }\n  ],\n  \"nextSprintDate\": \"27 Janvier\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Supprimer les prochaines étapes",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/next-steps/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["next-steps", "{{sprintId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 — 🎨 Styles",
+      "description": "Styles globaux (polices, couleurs, tailles)",
+      "item": [
+        {
+          "name": "Créer/remplacer les styles (upsert)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/styles", "host": ["{{baseUrl}}"], "path": ["styles"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sprintId\": \"{{sprintId}}\",\n  \"fontFamily\": \"DM Sans, sans-serif\",\n  \"headingFontFamily\": \"DM Sans, sans-serif\",\n  \"primaryColor\": \"#0F52BA\",\n  \"secondaryColor\": \"#6366F1\",\n  \"accentColor\": \"#00C48C\",\n  \"backgroundColor\": \"#F9FAFB\",\n  \"textColor\": \"#1F2937\",\n  \"fontSize\": 14,\n  \"borderRadius\": 8\n}"
+            }
+          }
+        },
+        {
+          "name": "Récupérer les styles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/styles/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["styles", "{{sprintId}}"] }
+          }
+        },
+        {
+          "name": "Mettre à jour (partiel — ex: couleurs)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/styles/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["styles", "{{sprintId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"primaryColor\": \"#1E40AF\",\n  \"accentColor\": \"#059669\",\n  \"fontSize\": 16\n}"
+            }
+          }
+        },
+        {
+          "name": "Supprimer les styles",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/styles/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["styles", "{{sprintId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 — 📄 Pages",
+      "description": "Configuration des pages/slides de la présentation",
+      "item": [
+        {
+          "name": "Créer une page",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/pages", "host": ["{{baseUrl}}"], "path": ["pages"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sprintId\": \"{{sprintId}}\",\n  \"pageId\": \"home\",\n  \"title\": \"Accueil\",\n  \"slug\": \"\",\n  \"order\": 0,\n  \"visible\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Remplacer toutes les pages (batch)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/pages/batch/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["pages", "batch", "{{sprintId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  { \"sprintId\": \"{{sprintId}}\", \"pageId\": \"home\", \"title\": \"Accueil\", \"slug\": \"\", \"order\": 0, \"visible\": true },\n  { \"sprintId\": \"{{sprintId}}\", \"pageId\": \"review\", \"title\": \"Sprint Review\", \"slug\": \"review\", \"order\": 1, \"visible\": true },\n  { \"sprintId\": \"{{sprintId}}\", \"pageId\": \"presentation\", \"title\": \"Présentation\", \"slug\": \"presentation\", \"order\": 2, \"visible\": true }\n]"
+            }
+          }
+        },
+        {
+          "name": "Lister les pages d'un sprint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/pages?sprintId={{sprintId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["pages"],
+              "query": [{ "key": "sprintId", "value": "{{sprintId}}" }]
+            }
+          }
+        },
+        {
+          "name": "Récupérer une page",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/pages/{{sprintId}}/review", "host": ["{{baseUrl}}"], "path": ["pages", "{{sprintId}}", "review"] }
+          }
+        },
+        {
+          "name": "Mettre à jour une page",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/pages/{{sprintId}}/review", "host": ["{{baseUrl}}"], "path": ["pages", "{{sprintId}}", "review"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Sprint Review #24\",\n  \"visible\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "Supprimer une page",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/pages/{{sprintId}}/review", "host": ["{{baseUrl}}"], "path": ["pages", "{{sprintId}}", "review"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 — 📎 Attachments",
+      "description": "Pièces jointes stockées dans MinIO S3",
+      "item": [
+        {
+          "name": "Upload une pièce jointe",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/attachments/upload", "host": ["{{baseUrl}}"], "path": ["attachments", "upload"] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "src": "", "description": "Sélectionner un fichier à uploader" },
+                { "key": "sprintId", "value": "{{sprintId}}", "type": "text" },
+                { "key": "category", "value": "general", "type": "text", "description": "demo | metrics | backlog | realizations | general" },
+                { "key": "description", "value": "Capture écran de la démo", "type": "text" },
+                { "key": "uploadedBy", "value": "Jean Dupont", "type": "text" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Lister les pièces jointes d'un sprint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/attachments/sprint/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["attachments", "sprint", "{{sprintId}}"] }
+          }
+        },
+        {
+          "name": "Lister par sprint + catégorie",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/attachments/sprint/{{sprintId}}?category=demo",
+              "host": ["{{baseUrl}}"],
+              "path": ["attachments", "sprint", "{{sprintId}}"],
+              "query": [{ "key": "category", "value": "demo" }]
+            }
+          }
+        },
+        {
+          "name": "Détail d'une pièce jointe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/attachments/{{attachmentId}}", "host": ["{{baseUrl}}"], "path": ["attachments", "{{attachmentId}}"] }
+          }
+        },
+        {
+          "name": "Télécharger le fichier",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/attachments/{{attachmentId}}/download", "host": ["{{baseUrl}}"], "path": ["attachments", "{{attachmentId}}", "download"] }
+          }
+        },
+        {
+          "name": "Supprimer une pièce jointe",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/attachments/{{attachmentId}}", "host": ["{{baseUrl}}"], "path": ["attachments", "{{attachmentId}}"] }
+          }
+        },
+        {
+          "name": "Supprimer toutes les pièces jointes d'un sprint",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/attachments/sprint/{{sprintId}}", "host": ["{{baseUrl}}"], "path": ["attachments", "sprint", "{{sprintId}}"] }
+          }
+        }
+      ]
+    }
+  ]
+}

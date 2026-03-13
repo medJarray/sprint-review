@@ -1,0 +1,5 @@
+# ansible/roles/helm/tasks/main.yml
+---
+- name: Install Helm
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+  tags: [helm, install]

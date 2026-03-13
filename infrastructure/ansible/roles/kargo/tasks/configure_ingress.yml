@@ -1,0 +1,116 @@
+# ansible/roles/kargo/tasks/configure_ingress.yml
+---
+- name: Configure Kargo API to run in insecure mode (TLS terminated by Envoy Gateway)
+  ansible.builtin.shell: |
+    helm upgrade kargo oci://ghcr.io/akuity/kargo-charts/kargo \
+    --namespace {{ kargo_namespace }} \
+    --reuse-values \
+    --set api.tls.enabled=false
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: kargo_insecure
+  changed_when: "'Release \"kargo\" has been upgraded' in kargo_insecure.stdout"
+
+- name: Create ReferenceGrant to allow Gateway to use Kargo TLS secret
+  ansible.builtin.shell: |
+    cat <<EOF | kubectl apply -f -
+    apiVersion: gateway.networking.k8s.io/v1beta1
+    kind: ReferenceGrant
+    metadata:
+      name: kargo-tls-grant
+      namespace: {{ kargo_namespace }}
+    spec:
+      from:
+        - group: gateway.networking.k8s.io
+          kind: Gateway
+          namespace: {{ envoy_gateway_namespace }}
+      to:
+        - group: ""
+          kind: Secret
+          name: kargo-tls
+    EOF
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: kargo_ref_grant
+  changed_when: "'created' in kargo_ref_grant.stdout or 'configured' in kargo_ref_grant.stdout"
+
+- name: Create Certificate for Kargo TLS (Let's Encrypt)
+  ansible.builtin.shell: |
+    cat <<EOF | kubectl apply -f -
+    apiVersion: cert-manager.io/v1
+    kind: Certificate
+    metadata:
+      name: kargo-tls
+      namespace: {{ kargo_namespace }}
+    spec:
+      secretName: kargo-tls
+      issuerRef:
+        name: letsencrypt-prod
+        kind: ClusterIssuer
+      dnsNames:
+        - {{ kargo_hostname }}
+    EOF
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: kargo_cert
+  changed_when: "'created' in kargo_cert.stdout or 'configured' in kargo_cert.stdout"
+
+- name: Wait for Kargo TLS certificate to be Ready
+  ansible.builtin.shell: |
+    kubectl wait certificate kargo-tls -n {{ kargo_namespace }} \
+      --for=condition=Ready \
+      --timeout=300s
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  changed_when: false
+
+- name: Write Kargo HTTPS listener patch to temp file
+  ansible.builtin.copy:
+    dest: /tmp/kargo-listener-patch.json
+    content: |
+      [{"op": "add", "path": "/spec/listeners/-", "value": {"name": "https-kargo", "protocol": "HTTPS", "port": 443, "hostname": "{{ kargo_hostname }}", "allowedRoutes": {"namespaces": {"from": "All"}}, "tls": {"mode": "Terminate", "certificateRefs": [{"name": "kargo-tls", "namespace": "{{ kargo_namespace }}"}]}}}]
+    mode: "0644"
+
+- name: Add Kargo HTTPS listener to Envoy Gateway
+  ansible.builtin.shell: |
+    IDX=0
+    for NAME in $(kubectl get gateway {{ envoy_gateway_name }} -n {{ envoy_gateway_namespace }} \
+        -o jsonpath='.spec.listeners[*].name'); do
+      if [ "$NAME" = "https-kargo" ]; then
+        kubectl patch gateway {{ envoy_gateway_name }} -n {{ envoy_gateway_namespace }} \
+          --type=json -p="[{\"op\": \"remove\", \"path\": \"/spec/listeners/$IDX\"}]"
+        break
+      fi
+      IDX=$((IDX+1))
+    done
+    kubectl patch gateway {{ envoy_gateway_name }} -n {{ envoy_gateway_namespace }} \
+      --type=json --patch-file=/tmp/kargo-listener-patch.json
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: kargo_gateway_listener
+  changed_when: true
+
+- name: Create HTTPRoute for Kargo
+  ansible.builtin.shell: |
+    cat <<EOF | kubectl apply -f -
+    apiVersion: gateway.networking.k8s.io/v1
+    kind: HTTPRoute
+    metadata:
+      name: kargo
+      namespace: {{ kargo_namespace }}
+    spec:
+      parentRefs:
+        - name: {{ envoy_gateway_name }}
+          namespace: {{ envoy_gateway_namespace }}
+          sectionName: https-kargo
+      hostnames:
+        - {{ kargo_hostname }}
+      rules:
+        - backendRefs:
+            - name: kargo-api
+              port: 80
+    EOF
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: kargo_httproute
+  changed_when: "'created' in kargo_httproute.stdout or 'configured' in kargo_httproute.stdout"

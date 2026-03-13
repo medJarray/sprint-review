@@ -1,0 +1,15 @@
+# ansible/roles/cert_manager/tasks/configure.yml
+---
+- name: Copy template for cert-manager Issuer
+  ansible.builtin.template:
+    src: cluster-issuer.yml.j2
+    dest: /tmp/cluster-issuer.yaml
+
+- name: Apply cert-manager Issuer configuration
+  ansible.builtin.shell: |
+    kubectl apply -f /tmp/cluster-issuer.yaml
+  environment: 
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: apply_issuer
+  failed_when: apply_issuer.rc != 0
+  changed_when: "'created' in apply_issuer.stdout or 'configured' in apply_issuer.stdout"

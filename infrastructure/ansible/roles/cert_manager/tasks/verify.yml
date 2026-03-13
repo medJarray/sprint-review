@@ -1,0 +1,8 @@
+# ansible/roles/cert_manager/tasks/verify.yml
+---
+- name: Verify cert-manager deployment
+  ansible.builtin.shell: |
+    kubectl --kubeconfig {{ kubeconfig_path }} -n cert-manager wait --for=condition=ready pod -l app.kubernetes.io/instance=cert-manager --timeout=120s
+  register: cert_manager_status
+  failed_when: cert_manager_status.rc != 0
+  changed_when: false

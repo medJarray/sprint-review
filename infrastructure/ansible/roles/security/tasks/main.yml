@@ -1,0 +1,17 @@
+# ansible/roles/security/tasks/main.yml
+---
+- name: Install and configure fail2ban
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/fail2ban.yml"
+  tags: [fail2ban]
+
+- name: Configure UFW firewall
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/ufw.yml"
+  tags: [ufw]
+
+- name: Configure audit daemon
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/auditd.yml"
+  tags: [auditd]
+
+- name: Configure unattended upgrades
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/unattended-upgrades.yml"
+  tags: [unattended-upgrades]

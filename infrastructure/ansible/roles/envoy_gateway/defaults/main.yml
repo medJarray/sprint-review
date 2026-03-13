@@ -1,0 +1,8 @@
+# ansible/roles/envoy_gateway/defaults/main.yml
+---
+envoy_gateway_version: ""  # Version d'Envoy
+envoy_gateway_name: "envoy-gateway-gw"  # Nom de la release Helm pour Envoy Gateway
+envoy_gateway_namespace: "envoy-gateway-system"  # Namespace pour Envoy Gateway
+envoy_gateway_wait_timeout: 120  # Timeout pour attendre les pods Envoy Gateway
+envoy_gateway_tls_secret_name: "envoy-gateway-cert"  # Nom du secret TLS pour Envoy Gateway
+kubeconfig_path: /etc/rancher/k3s/k3s.yaml  # Chemin vers le kubeconfig pour les commandes kubectl/helm

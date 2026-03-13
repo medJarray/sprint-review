@@ -1,0 +1,50 @@
+# ansible/playbooks/site.yml
+# Full setup : hardening + K3s + CSI + CCM + Helm
+---
+- name: Bootstrap and harden all servers
+  hosts: all
+  become: true
+  roles:
+    - role: common
+      tags: [common]
+    - role: security
+      tags: [security]
+
+- name: Install K3s and cloud components
+  hosts: k3s_servers
+  become: true
+  pre_tasks:
+    - name: Validate HCLOUD_TOKEN is set
+      ansible.builtin.assert:
+        that:
+          - hcloud_token is defined
+          - hcloud_token | length > 0
+        fail_msg: |
+          HCLOUD_TOKEN is not set!
+          Run: export HCLOUD_TOKEN='your-hetzner-api-token'
+        quiet: true
+      tags: [always]
+  roles:
+    - role: helm
+      tags: [helm]
+    - role: k3s_server
+      tags: [k3s]
+    - role: hetzner_ccm
+      tags: [ccm]
+    - role: hetzner_csi
+      tags: [csi]
+    - role: envoy_gateway
+      tags: [envoy_gateway]
+    - role: cert_manager
+      tags: [cert_manager]
+    - role: sealed_secrets
+      tags: [sealed_secrets]
+    - role: argocd
+      tags: [argocd]
+    - role: kargo
+      tags: [kargo]
+    - role: observability
+      tags: [observability]
+    - role: velero
+      tags: [velero]
+    

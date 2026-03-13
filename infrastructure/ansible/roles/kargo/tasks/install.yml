@@ -1,0 +1,18 @@
+# ansible/roles/kargo/tasks/install.yml
+---
+- name: Set Kargo version
+  ansible.builtin.set_fact:
+    kargo_version_flag: "{{ '--version ' + kargo_version if kargo_version != '' else '' }}"
+  
+- name: Deploy Kargo with Helm
+  ansible.builtin.shell: |
+    helm upgrade --install kargo oci://ghcr.io/akuity/kargo-charts/kargo \
+    --namespace {{ kargo_namespace }} \
+    {{ kargo_version_flag }} \
+    --set-string "api.adminAccount.passwordHash={{ kargo_admin_password_hash }}" \
+    --set-string "api.adminAccount.tokenSigningKey={{ kargo_admin_token_signing_key }}" \
+    --create-namespace
+  environment: 
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: kargo_install
+  changed_when: "'Release \"kargo\" has been upgraded' in kargo_install.stdout or 'Release \"kargo\" has been installed' in kargo_install.stdout"

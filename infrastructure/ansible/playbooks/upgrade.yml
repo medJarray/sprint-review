@@ -1,0 +1,22 @@
+# ansible/playbooks/upgrade.yml
+# Upgrade K3s et OS
+---
+- name: Upgrade servers
+  hosts: all
+  become: true
+  serial: 1     # Un serveur à la fois (rolling upgrade)
+  tasks:
+    - name: Update apt packages
+      ansible.builtin.apt:
+        upgrade: safe
+        update_cache: true
+
+    - name: Upgrade K3s
+      ansible.builtin.shell: |
+        curl -sfL https://get.k3s.io | sh -
+      when: k3s_upgrade | default(false)
+
+    - name: Reboot if needed
+      ansible.builtin.reboot:
+        reboot_timeout: 300
+      when: reboot_required_file.stat.exists | default(false)

@@ -1,0 +1,25 @@
+# ansible/roles/common/tasks/main.yml
+---
+- name: Include OS packages
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/packages.yml"
+  tags: [packages]
+
+- name: Include user configuration
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/users.yml"
+  tags: [users]
+
+- name: Include SSH hardening
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/ssh.yml"
+  tags: [ssh]
+
+- name: Include sysctl tuning
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/sysctl.yml"
+  tags: [sysctl]
+
+- name: Include timezone configuration
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/timezone.yml"
+  tags: [timezone]
+
+- name: Configure swap
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/swap.yml"
+  tags: [swap]

@@ -1,0 +1,41 @@
+# .github/workflows/infra-apply.yml
+name: Terraform Apply + Ansible
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'terraform/**'
+      - 'ansible/**'
+
+env:
+  TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    environment: production     # ← Require manual approval
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Apply (prod)
+        working-directory: terraform/environments/prod
+        run: |
+          terraform init
+          terraform apply -var-file=terraform.tfvars -auto-approve
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+      - name: Run Ansible playbook
+        working-directory: ansible/
+        run: |
+          pip install ansible
+          ansible-playbook playbooks/site.yml \
+            -i inventories/prod/hosts.yml \
+            --extra-vars "hcloud_token=${{ secrets.HCLOUD_TOKEN }}"

@@ -1,0 +1,28 @@
+# ansible/roles/observability/tasks/verify.yml
+---
+- name: Verify Promtail deployment
+  ansible.builtin.shell: |
+    kubectl rollout status daemonset/promtail -n {{ promtail_namespace }} --timeout=3m
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: promtail_status
+  failed_when: promtail_status.rc != 0
+  changed_when: false
+
+- name: Verify Prometheus Stack deployment
+  ansible.builtin.shell: |
+    kubectl wait --timeout=5m -n {{ prometheus_stack_namespace }} deployment/prometheus-stack-kube-prom-operator --for=condition=Available
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: prometheus_stack_status
+  failed_when: prometheus_stack_status.rc != 0
+  changed_when: false
+
+- name: Verify Loki deployment
+  ansible.builtin.shell: |
+    kubectl rollout status statefulset/loki -n {{ loki_namespace }} --timeout=3m
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: loki_status
+  failed_when: loki_status.rc != 0
+  changed_when: false

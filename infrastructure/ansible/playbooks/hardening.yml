@@ -1,0 +1,8 @@
+# ansible/playbooks/hardening.yml
+# Sécurité seulement (peut être relancé régulièrement)
+---
+- name: Security hardening
+  hosts: all
+  become: true
+  roles:
+    - security

@@ -1,0 +1,16 @@
+declare const BASE_URL: string;
+declare const SPRINT_ID = "sprint-default";
+declare function post(path: string, data: any): Promise<void>;
+declare function put(path: string, data: any): Promise<void>;
+declare function seedSprint(): Promise<void>;
+declare function seedTeams(): Promise<void>;
+declare function seedObjectives(): Promise<void>;
+declare function seedBacklog(): Promise<void>;
+declare function seedRealizations(): Promise<void>;
+declare function seedDemoConfig(): Promise<void>;
+declare function seedMetrics(): Promise<void>;
+declare function seedBacklogEvolution(): Promise<void>;
+declare function seedNextSteps(): Promise<void>;
+declare function seedStyles(): Promise<void>;
+declare function seedPages(): Promise<void>;
+declare function main(): Promise<void>;

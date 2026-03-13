@@ -1,0 +1,9 @@
+# ansible/roles/observability/defaults/main.yml
+---
+promtail_version: ""  # Version de Promtail (vide = dernière stable)
+promtail_namespace: "observability"  # Namespace pour Promtail
+prometheus_stack_version: ""  # Version de Prometheus Stack (vide = dernière stable)
+prometheus_stack_namespace: "observability"  # Namespace pour Prometheus Stack
+loki_version: "5.47.2"  # Pinné en 5.x (chart 6.x ne supporte plus SingleBinary filesystem)
+loki_namespace: "observability"  # Namespace pour Loki
+kubeconfig_path: /etc/rancher/k3s/k3s.yaml  # Chemin vers le kubeconfig pour les commandes kubectl/helm

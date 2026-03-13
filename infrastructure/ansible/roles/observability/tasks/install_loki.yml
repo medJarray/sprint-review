@@ -1,0 +1,20 @@
+# ansible/roles/observability/tasks/install_loki.yml
+---
+- name: Set Loki Helm chart version
+  ansible.builtin.set_fact:
+    loki_chart_version_flag: "{{ '--version ' + loki_version if loki_version != '' else '' }}"
+
+- name: Deploy Loki with Helm
+  ansible.builtin.shell: |
+    helm upgrade --install loki grafana/loki \
+    --namespace {{ loki_namespace }} \
+    {{ loki_chart_version_flag }} \
+    --set loki.auth_enabled=false \
+    --set loki.commonConfig.replication_factor=1 \
+    --set loki.storage.type=filesystem \
+    --set singleBinary.replicas=1 \
+    --create-namespace
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: loki_install
+  changed_when: "'Release \"loki\" has been upgraded' in loki_install.stdout or 'Release \"loki\" has been installed' in loki_install.stdout"

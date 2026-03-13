@@ -1,0 +1,11 @@
+# ansible/roles/velero/tasks/helm_repo.yml
+---
+- name: Add Helm repo for Velero
+  ansible.builtin.shell: |
+    helm repo add vmware-tanzu https://vmware-tanzu.github.io/helm-charts
+  register: velero_helm_repo
+  changed_when: "'already exists' not in velero_helm_repo.stderr"
+
+- name: Update Helm repositories
+  ansible.builtin.shell: helm repo update
+  changed_when: false

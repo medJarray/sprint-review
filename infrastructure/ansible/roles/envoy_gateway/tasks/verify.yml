@@ -1,0 +1,10 @@
+# ansible/roles/envoy_gateway/tasks/verify.yml
+---
+- name: Verify Envoy Gateway deployment
+  ansible.builtin.shell: |
+    kubectl wait --timeout=5m -n {{ envoy_gateway_namespace }} deployment/envoy-gateway --for=condition=Available
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: envoy_gateway_status
+  failed_when: envoy_gateway_status.rc != 0
+  changed_when: false

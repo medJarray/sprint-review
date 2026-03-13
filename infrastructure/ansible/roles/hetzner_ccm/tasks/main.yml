@@ -1,0 +1,5 @@
+# ansible/roles/hetzner_ccm/tasks/main.yml
+---
+- name: Deploy Hetzner CCM
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+  tags: [ccm, install]

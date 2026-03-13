@@ -1,0 +1,14 @@
+# ansible/roles/kargo/tasks/main.yml
+---
+
+- name: Deploy Kargo
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+  tags: [kargo, install]
+
+- name: Verify Kargo deployment
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/verify.yml"
+  tags: [kargo, verify]
+
+- name: Configure Kargo ingress
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/configure_ingress.yml"
+  tags: [kargo, ingress]

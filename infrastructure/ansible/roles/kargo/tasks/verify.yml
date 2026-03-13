@@ -1,0 +1,10 @@
+# ansible/roles/kargo/tasks/verify.yml
+---
+- name: Verify Kargo deployment
+  ansible.builtin.shell: |
+    kubectl wait --timeout=5m -n {{ kargo_namespace }} deployment/kargo-controller --for=condition=Available
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: kargo_status
+  failed_when: kargo_status.rc != 0
+  changed_when: false

@@ -1,0 +1,18 @@
+# ansible/roles/argocd/tasks/install.yml
+---
+- name: Set argocd_version variable for Helm
+  ansible.builtin.set_fact:
+    argocd_chart_version_flag: "{{ '--version ' + argocd_version if argocd_version != '' else '' }}"
+
+
+- name: Install Argo CD using Helm
+  ansible.builtin.shell: |
+    helm upgrade --install {{ argocd_name }} argo/argo-cd \
+    --namespace {{ argocd_namespace }} \
+    {{ argocd_chart_version_flag }} \
+    {% if argocd_admin_password_hash != '' %}--set-string "configs.secret.argocdServerAdminPassword={{ argocd_admin_password_hash }}" \{% endif %}
+    --create-namespace
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: argocd_install
+  changed_when: "'Release \"argocd\" has been upgraded' in argocd_install.stdout or 'Release \"argocd\" has been installed' in argocd_install.stdout"

@@ -1,0 +1,31 @@
+# .gitignore
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+*.tfstate.*.backup
+.terraform/
+.terraform.lock.hcl
+*.tfvars.json
+secrets.tfvars
+terraform.tfvars
+crash.log
+
+# Ansible
+*.retry
+ansible/inventories/*/hosts.yml
+
+# SSH Keys
+*.pem
+*.key
+id_rsa
+id_ed25519
+
+# Kubeconfigs
+kubeconfigs/
+
+# General
+.env
+.env.*
+*.log
+.DS_Store

@@ -1,0 +1,21 @@
+# ansible/roles/velero/tasks/install.yml
+---
+- name: Set Velero Helm version
+  ansible.builtin.set_fact:
+    velero_helm_version_tag: "{{ '--version ' + velero_version if velero_version != '' else '' }}"
+
+- name: Deploy Velero using Helm
+  ansible.builtin.shell: |
+    helm upgrade --install velero vmware-tanzu/velero \
+    {{ velero_helm_version_tag }} \
+    --namespace {{ velero_namespace }} \
+    --timeout 10m \
+    --set kubectl.image.tag=1.30 \
+    --set-json 'configuration.backupStorageLocation=[]' \
+    --set-json 'configuration.volumeSnapshotLocation=[]' \
+    --set snapshotsEnabled=false \
+    --create-namespace
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: velero_install
+  changed_when: "'Release \"velero\" has been upgraded' in velero_install.stdout or 'Release \"velero\" has been installed' in velero_install.stdout"
