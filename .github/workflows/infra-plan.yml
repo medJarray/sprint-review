@@ -2,6 +2,13 @@
 name: Terraform Plan
 
 on:
+  push:
+    branches: [develop]
+    paths:
+      - 'infrastructure/terraform/**'
+      - 'infrastructure/ansible/**'
+      - '.github/workflows/infra-plan.yml'
+  
   pull_request:
     paths:
       - 'infrastructure/terraform/**'
